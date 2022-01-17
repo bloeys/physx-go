@@ -26,6 +26,13 @@ func main() {
 	s := p.CreateScene(sd)
 	println("Scene:", s)
 
+	scenePvdClient := s.GetScenePvdClient()
+	println("ScenePvdClient:", scenePvdClient)
+
+	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONSTRAINTS, true)
+	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONTACTS, true)
+	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_SCENEQUERIES, true)
+
 	for {
 
 	}

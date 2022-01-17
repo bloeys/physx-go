@@ -24,6 +24,10 @@ struct CPxPhysics* CPxCreatePhysics(struct CPxFoundation* cfoundation, struct CP
 struct CPxScene* CPxPhysics_createScene(struct CPxPhysics*, struct CPxSceneDesc*);
 void CPxPhysics_release(struct CPxPhysics*);
 
+struct CPxPvdSceneClient* CPxScene_getScenePvdClient(struct CPxScene*);
+
+void CPxPvdSceneClient_setScenePvdFlag(struct CPxPvdSceneClient* c, enum CPxPvdSceneFlag flag, bool value);
+
 struct CPxVec3 NewCPxVec3(float x, float y, float z);
 
 struct CPxDefaultCpuDispatcher* CPxDefaultCpuDispatcherCreate(CPxU32 numThreads, CPxU32 affinityMasks);
@@ -111,11 +115,16 @@ type Scene struct {
 	cS *C.struct_CPxScene
 }
 
+func (s *Scene) GetScenePvdClient() *PvdSceneClient {
+	return &PvdSceneClient{
+		cPvdSceneClient: C.CPxScene_getScenePvdClient(s.cS),
+	}
+}
+
 type Physics struct {
 	cPhysics *C.struct_CPxPhysics
 }
 
-// struct CPxScene* CPxPhysics_createScene(struct CPxPhysics*, struct CPxSceneDesc*);
 func (p *Physics) CreateScene(sd *SceneDesc) *Scene {
 	return &Scene{
 		cS: C.CPxPhysics_createScene(p.cPhysics, sd.cSD),
@@ -180,4 +189,20 @@ func NewSceneDesc(ts *TolerancesScale) *SceneDesc {
 	return &SceneDesc{
 		cSD: C.NewCPxSceneDesc(ts.cTolScale),
 	}
+}
+
+type PvdSceneFlag uint32
+
+const (
+	PvdSceneFlag_eTRANSMIT_CONTACTS     PvdSceneFlag = (1 << 0) //Transmits contact stream to PVD.
+	PvdSceneFlag_eTRANSMIT_SCENEQUERIES PvdSceneFlag = (1 << 1) //Transmits scene query stream to PVD.
+	PvdSceneFlag_eTRANSMIT_CONSTRAINTS  PvdSceneFlag = (1 << 2) //Transmits constraints visualize stream to PVD.
+)
+
+type PvdSceneClient struct {
+	cPvdSceneClient *C.struct_CPxPvdSceneClient
+}
+
+func (p *PvdSceneClient) SetScenePvdFlag(flag PvdSceneFlag, value bool) {
+	C.CPxPvdSceneClient_setScenePvdFlag(p.cPvdSceneClient, uint32(flag), C._Bool(value))
 }

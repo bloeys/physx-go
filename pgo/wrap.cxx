@@ -16,3 +16,7 @@
 #include <CPxSceneDesc.h>
 #include <CPxTolerancesScale.h>
 #include <CPxVec3.h>
+#include <CPxPlane.h>
+#include <CPxActor.h>
+#include <CPxRigidStatic.h>
+#include <CPxPvdSceneClient.h>
