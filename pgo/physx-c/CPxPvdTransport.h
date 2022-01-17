@@ -1,5 +1,5 @@
-#ifndef __CPxPvdTransport_H__
-#define __CPxPvdTransport_H__
+#ifndef CPxPvdTransport_H
+#define CPxPvdTransport_H
 
 #ifdef __cplusplus
 extern "C" {

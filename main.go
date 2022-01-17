@@ -9,15 +9,29 @@ func main() {
 	defer f.Release()
 	println("foundation:", f)
 
-	pvd := pgo.CreatePvd(f)
-	// defer pvd.Release()
-	println("Pvd:", pvd)
-
-	pvdTr := pgo.DefaultPvdSocketTransportCreate("127.0.0.1", 9876, 500)
-	// defer pvdTr.Release()
+	pvdTr := pgo.DefaultPvdSocketTransportCreate("0.0.0.0", 5426, 100000)
 	println("Pvd transport:", pvdTr)
 
-	// for {
-	// 	time.Sleep(1 / 60 * time.Second)
-	// }
+	pvd := pgo.CreatePvd(f)
+	println("Pvd:", pvd)
+	println("connect:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
+
+	ts := pgo.NewTolerancesScale(1, 9.81)
+	p := pgo.CreatePhysics(f, ts, false, pvd)
+	println("Physics:", p)
+
+	sd := pgo.NewSceneDesc(ts)
+	sd.SetGravity(pgo.NewVec3(0, -9.8, 0))
+	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, 0).ToCpuDispatcher())
+
+	s := p.CreateScene(sd)
+	println("Scene:", s)
+
+	for {
+
+	}
+
+	p.Release()
+	pvd.Release()
+	pvdTr.Release()
 }

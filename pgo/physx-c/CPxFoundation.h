@@ -1,5 +1,5 @@
-#ifndef __CPxFoundation_H__
-#define __CPxFoundation_H__
+#ifndef CPxFoundation_H
+#define CPxFoundation_H
 
 #ifdef __cplusplus
 extern "C" {
