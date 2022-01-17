@@ -15,6 +15,8 @@ extern "C" {
 
 	CPxAPI CSTRUCT CPxPvdSceneClient* CPxScene_getScenePvdClient(CSTRUCT CPxScene*);
 	CPxAPI void CPxScene_addActor(CSTRUCT CPxScene*, CSTRUCT CPxActor* actor);
+	CPxAPI void CPxScene_simulate(CSTRUCT CPxScene*, CPxReal elapsedTime);
+	CPxAPI bool CPxScene_fetchResults(CSTRUCT CPxScene*, bool block, CPxU32* errorState);
 
 	CPxAPI void CPxScene_release(CSTRUCT CPxScene*);
 

@@ -33,8 +33,14 @@ func main() {
 	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONTACTS, true)
 	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_SCENEQUERIES, true)
 
-	for {
+	pMat := p.CreateMaterial(0.5, 0.5, 0.6)
+	groundPlane := pgo.CreatePlane(p, pgo.NewPlane(0, 1, 0, 1), pMat)
+	s.AddActor(groundPlane.ToActor())
 
+	for {
+		s.Simulate(1 / 60.0)
+		a, b := s.FetchResults(true)
+		println("a:", a, "; b:", b)
 	}
 
 	p.Release()

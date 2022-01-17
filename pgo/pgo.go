@@ -20,11 +20,17 @@ void CPxPvdTransport_release(struct CPxPvdTransport* cppt);
 
 struct CPxTolerancesScale NewCPxTolerancesScale(CPxReal length, CPxReal speed);
 
+//PxPhysics
 struct CPxPhysics* CPxCreatePhysics(struct CPxFoundation* cfoundation, struct CPxTolerancesScale cscale, bool trackOutstandingAllocations, struct CPxPvd* cpvd);
 struct CPxScene* CPxPhysics_createScene(struct CPxPhysics*, struct CPxSceneDesc*);
+struct CPxMaterial* CPxPhysics_createMaterial(struct CPxPhysics*, CPxReal staticFriction, CPxReal dynamicFriction, CPxReal restitution);
 void CPxPhysics_release(struct CPxPhysics*);
 
+//PxScene
 struct CPxPvdSceneClient* CPxScene_getScenePvdClient(struct CPxScene*);
+void CPxScene_addActor(struct CPxScene*, struct CPxActor* actor);
+void CPxScene_simulate(struct CPxScene*, CPxReal elapsedTime);
+bool CPxScene_fetchResults(struct CPxScene*, bool block, CPxU32* errorState);
 
 void CPxPvdSceneClient_setScenePvdFlag(struct CPxPvdSceneClient* c, enum CPxPvdSceneFlag flag, bool value);
 
@@ -36,6 +42,14 @@ struct CPxCpuDispatcher* CPxDefaultCpuDispatcher_toCPxCpuDispatcher(struct CPxDe
 struct CPxSceneDesc* NewCPxSceneDesc(struct CPxTolerancesScale);
 void CPxSceneDesc_set_gravity(struct CPxSceneDesc*, struct CPxVec3);
 void CPxSceneDesc_set_cpuDispatcher(struct CPxSceneDesc*, struct CPxCpuDispatcher*);
+
+//Plane
+struct CPxPlane* NewCPxPlane(float nx, float ny, float nz, float distance);
+
+//RigidStatic
+struct CPxRigidStatic* CPxCreatePlane(struct CPxPhysics* sdk, struct CPxPlane* plane, struct CPxMaterial* material);
+struct CPxActor* CPxRigidStatic_toCPxActor(struct CPxRigidStatic*);
+
 */
 import "C"
 
@@ -121,6 +135,23 @@ func (s *Scene) GetScenePvdClient() *PvdSceneClient {
 	}
 }
 
+func (s *Scene) AddActor(a *Actor) {
+	C.CPxScene_addActor(s.cS, a.cA)
+}
+
+// void CPxScene_simulate(CSTRUCT CPxScene*, CPxReal elapsedTime);
+func (s *Scene) Simulate(elapsedTime float32) {
+	C.CPxScene_simulate(s.cS, C.float(elapsedTime))
+}
+
+// bool CPxScene_fetchResults(struct CPxScene*, bool block, CPxU32* errorState);
+func (s *Scene) FetchResults(block bool) (bool, uint32) {
+
+	var errState uint32
+	b := C.CPxScene_fetchResults(s.cS, C._Bool(block), (*C.uint)(&errState))
+	return bool(b), errState
+}
+
 type Physics struct {
 	cPhysics *C.struct_CPxPhysics
 }
@@ -128,6 +159,12 @@ type Physics struct {
 func (p *Physics) CreateScene(sd *SceneDesc) *Scene {
 	return &Scene{
 		cS: C.CPxPhysics_createScene(p.cPhysics, sd.cSD),
+	}
+}
+
+func (p *Physics) CreateMaterial(staticFriction, dynamicFriction, restitution float32) *Material {
+	return &Material{
+		cM: C.CPxPhysics_createMaterial(p.cPhysics, C.float(staticFriction), C.float(dynamicFriction), C.float(restitution)),
 	}
 }
 
@@ -161,7 +198,6 @@ type DefaultCpuDispatcher struct {
 	cDefCpuDisp *C.struct_CPxDefaultCpuDispatcher
 }
 
-// struct CPxCpuDispatcher* CPxDefaultCpuDispatcher_toCPxCpuDispatcher(struct CPxDefaultCpuDispatcher* cdcd);
 func (d *DefaultCpuDispatcher) ToCpuDispatcher() *CpuDispatcher {
 	return &CpuDispatcher{cCpuDisp: (*C.struct_CPxCpuDispatcher)(d.cDefCpuDisp)}
 }
@@ -184,7 +220,6 @@ func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
 	C.CPxSceneDesc_set_cpuDispatcher(sd.cSD, cd.cCpuDisp)
 }
 
-//struct CPxSceneDesc* NewCPxSceneDesc(struct CPxTolerancesScale);
 func NewSceneDesc(ts *TolerancesScale) *SceneDesc {
 	return &SceneDesc{
 		cSD: C.NewCPxSceneDesc(ts.cTolScale),
@@ -205,4 +240,40 @@ type PvdSceneClient struct {
 
 func (p *PvdSceneClient) SetScenePvdFlag(flag PvdSceneFlag, value bool) {
 	C.CPxPvdSceneClient_setScenePvdFlag(p.cPvdSceneClient, uint32(flag), C._Bool(value))
+}
+
+type Material struct {
+	cM *C.struct_CPxMaterial
+}
+
+type Plane struct {
+	cP *C.struct_CPxPlane
+}
+
+func NewPlane(nx, ny, nz, distance float32) *Plane {
+	return &Plane{
+		cP: C.NewCPxPlane(C.float(nx), C.float(ny), C.float(nz), C.float(distance)),
+	}
+}
+
+type Actor struct {
+	cA *C.struct_CPxActor
+}
+
+type RigidStatic struct {
+	cRs *C.struct_CPxRigidStatic
+}
+
+//struct CPxActor* CPxRigidStatic_toCPxActor(struct CPxRigidStatic*);
+func (rs *RigidStatic) ToActor() *Actor {
+	return &Actor{
+		cA: C.CPxRigidStatic_toCPxActor(rs.cRs),
+	}
+}
+
+// struct CPxRigidStatic* CPxCreatePlane(struct CPxPhysics* sdk, struct CPxPlane* plane, struct CPxMaterial* material);
+func CreatePlane(p *Physics, plane *Plane, mat *Material) *RigidStatic {
+	return &RigidStatic{
+		cRs: C.CPxCreatePlane(p.cPhysics, plane.cP, mat.cM),
+	}
 }
