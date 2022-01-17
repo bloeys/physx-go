@@ -6,10 +6,9 @@ import (
 
 func main() {
 	f := pgo.CreateFoundation()
-	defer f.Release()
 	println("foundation:", f)
 
-	pvdTr := pgo.DefaultPvdSocketTransportCreate("0.0.0.0", 5426, 100000)
+	pvdTr := pgo.DefaultPvdSocketTransportCreate("127.0.0.1", 5425, 100000)
 	println("Pvd transport:", pvdTr)
 
 	pvd := pgo.CreatePvd(f)

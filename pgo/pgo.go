@@ -34,7 +34,6 @@ void CPxSceneDesc_set_gravity(struct CPxSceneDesc*, struct CPxVec3);
 void CPxSceneDesc_set_cpuDispatcher(struct CPxSceneDesc*, struct CPxCpuDispatcher*);
 */
 import "C"
-import "unsafe"
 
 type PvdInstrumentationFlag uint32
 
@@ -91,11 +90,9 @@ func (p *PvdTransport) Release() {
 
 func DefaultPvdSocketTransportCreate(host string, port, timeoutMillis int) *PvdTransport {
 
-	hostCStr := C.CString(host)
-	defer C.free(unsafe.Pointer(hostCStr))
-
+	//This CString should NOT be freed because its stored internally. If this is freed connection to PVD will fail
 	p := &PvdTransport{}
-	p.cPvdTr = C.CPxDefaultPvdSocketTransportCreate(hostCStr, C.int(port), C.int(timeoutMillis))
+	p.cPvdTr = C.CPxDefaultPvdSocketTransportCreate(C.CString(host), C.int(port), C.int(timeoutMillis))
 	return p
 }
 
