@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+	//TODO: Maybe convert this into a value type like CPxSphereGeometry?
 	struct CPxPlane
 	{
 		void* obj;

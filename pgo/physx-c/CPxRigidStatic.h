@@ -16,7 +16,7 @@ extern "C" {
 	};
 
 	CPxAPI CSTRUCT CPxRigidStatic* CPxCreatePlane(CSTRUCT CPxPhysics* sdk, CSTRUCT CPxPlane* plane, CSTRUCT CPxMaterial* material);
-	CPxAPI CSTRUCT CPxActor* CPxRigidStatic_toCPxActor(CSTRUCT CPxRigidStatic*);
+	CPxAPI CSTRUCT CPxActor CPxRigidStatic_toCPxActor(CSTRUCT CPxRigidStatic*);
 
 #ifdef __cplusplus
 }

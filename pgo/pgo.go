@@ -6,50 +6,6 @@ package pgo
 
 #include <wrap.cxx>
 #include <stdlib.h> //Needed for C.free
-
-//Functions
-struct CPxFoundation* CPxCreateFoundation();
-void CPxFoundation_release(struct CPxFoundation*);
-
-struct CPxPvd* CPxCreatePvd(struct CPxFoundation*);
-bool CPxPvd_connect(struct CPxPvd*, struct CPxPvdTransport*, enum CPxPvdInstrumentationFlag);
-void CPxPvd_release(struct CPxPvd*);
-
-struct CPxPvdTransport* CPxDefaultPvdSocketTransportCreate(const char* address, int port, int timeoutMillis);
-void CPxPvdTransport_release(struct CPxPvdTransport* cppt);
-
-struct CPxTolerancesScale NewCPxTolerancesScale(CPxReal length, CPxReal speed);
-
-//PxPhysics
-struct CPxPhysics* CPxCreatePhysics(struct CPxFoundation* cfoundation, struct CPxTolerancesScale cscale, bool trackOutstandingAllocations, struct CPxPvd* cpvd);
-struct CPxScene* CPxPhysics_createScene(struct CPxPhysics*, struct CPxSceneDesc*);
-struct CPxMaterial* CPxPhysics_createMaterial(struct CPxPhysics*, CPxReal staticFriction, CPxReal dynamicFriction, CPxReal restitution);
-void CPxPhysics_release(struct CPxPhysics*);
-
-//PxScene
-struct CPxPvdSceneClient* CPxScene_getScenePvdClient(struct CPxScene*);
-void CPxScene_addActor(struct CPxScene*, struct CPxActor* actor);
-void CPxScene_simulate(struct CPxScene*, CPxReal elapsedTime);
-bool CPxScene_fetchResults(struct CPxScene*, bool block, CPxU32* errorState);
-
-void CPxPvdSceneClient_setScenePvdFlag(struct CPxPvdSceneClient* c, enum CPxPvdSceneFlag flag, bool value);
-
-struct CPxVec3 NewCPxVec3(float x, float y, float z);
-
-struct CPxDefaultCpuDispatcher* CPxDefaultCpuDispatcherCreate(CPxU32 numThreads, CPxU32 affinityMasks);
-struct CPxCpuDispatcher* CPxDefaultCpuDispatcher_toCPxCpuDispatcher(struct CPxDefaultCpuDispatcher* cdcd);
-
-struct CPxSceneDesc* NewCPxSceneDesc(struct CPxTolerancesScale);
-void CPxSceneDesc_set_gravity(struct CPxSceneDesc*, struct CPxVec3);
-void CPxSceneDesc_set_cpuDispatcher(struct CPxSceneDesc*, struct CPxCpuDispatcher*);
-
-//Plane
-struct CPxPlane* NewCPxPlane(float nx, float ny, float nz, float distance);
-
-//RigidStatic
-struct CPxRigidStatic* CPxCreatePlane(struct CPxPhysics* sdk, struct CPxPlane* plane, struct CPxMaterial* material);
-struct CPxActor* CPxRigidStatic_toCPxActor(struct CPxRigidStatic*);
-
 */
 import "C"
 
@@ -256,24 +212,98 @@ func NewPlane(nx, ny, nz, distance float32) *Plane {
 	}
 }
 
+type Quat struct {
+	cQ C.struct_CPxQuat
+}
+
+// CPxAPI CPxInline CSTRUCT CPxQuat NewCPxQuat(float angleRads, float x, float y, float z);
+func NewQuat(angleRads, x, y, z float32) *Quat {
+	return &Quat{
+		cQ: C.NewCPxQuat(C.float(angleRads), C.float(x), C.float(y), C.float(z)),
+	}
+}
+
+type Transform struct {
+	cT C.struct_CPxTransform
+}
+
+// struct CPxTransform NewCPxTransform(struct CPxVec3*, struct CPxQuat*);
+func NewTransform(v *Vec3, q *Quat) *Transform {
+	return &Transform{
+		cT: C.NewCPxTransform(&v.cV, &q.cQ),
+	}
+}
+
+type Geometry struct {
+	cG C.struct_CPxGeometry
+}
+
+type SphereGeometry struct {
+	cSg C.struct_CPxSphereGeometry
+}
+
+// struct CPxGeometry CPxSphereGeometry_toCPxGeometry(struct CPxSphereGeometry*);
+func (sg *SphereGeometry) ToGeometry() *Geometry {
+	return &Geometry{
+		cG: C.CPxSphereGeometry_toCPxGeometry(&sg.cSg),
+	}
+}
+
+// struct CPxSphereGeometry NewCPxSphereGeometry(CPxReal radius);
+func NewSphereGeometry(radius float32) *SphereGeometry {
+	return &SphereGeometry{
+		cSg: C.NewCPxSphereGeometry(C.float(radius)),
+	}
+}
+
+type BoxGeometry struct {
+	cBg C.struct_CPxBoxGeometry
+}
+
+func (bg *BoxGeometry) ToGeometry() *Geometry {
+	return &Geometry{
+		cG: C.CPxBoxGeometry_toCPxGeometry(&bg.cBg),
+	}
+}
+
+func NewBoxGeometry(hx, hy, hz float32) *BoxGeometry {
+	return &BoxGeometry{
+		cBg: C.NewCPxBoxGeometry(C.float(hx), C.float(hy), C.float(hz)),
+	}
+}
+
 type Actor struct {
-	cA *C.struct_CPxActor
+	cA C.struct_CPxActor
 }
 
 type RigidStatic struct {
 	cRs *C.struct_CPxRigidStatic
 }
 
-//struct CPxActor* CPxRigidStatic_toCPxActor(struct CPxRigidStatic*);
 func (rs *RigidStatic) ToActor() *Actor {
 	return &Actor{
 		cA: C.CPxRigidStatic_toCPxActor(rs.cRs),
 	}
 }
 
-// struct CPxRigidStatic* CPxCreatePlane(struct CPxPhysics* sdk, struct CPxPlane* plane, struct CPxMaterial* material);
 func CreatePlane(p *Physics, plane *Plane, mat *Material) *RigidStatic {
 	return &RigidStatic{
 		cRs: C.CPxCreatePlane(p.cPhysics, plane.cP, mat.cM),
+	}
+}
+
+type RigidDynamic struct {
+	cRd *C.struct_CPxRigidDynamic
+}
+
+func (rs *RigidDynamic) ToActor() *Actor {
+	return &Actor{
+		cA: C.CPxRigidDynamic_toCPxActor(rs.cRd),
+	}
+}
+
+func CreateDynamic(p *Physics, t *Transform, g *Geometry, m *Material, density float32, shapeOffset *Transform) *RigidDynamic {
+	return &RigidDynamic{
+		cRd: C.CPxCreateDynamic(p.cPhysics, &t.cT, g.cG, m.cM, C.float(density), &shapeOffset.cT),
 	}
 }

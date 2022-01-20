@@ -9,7 +9,7 @@ extern "C" {
 		float x, y, z;
 	};
 
-	CPxAPI CSTRUCT CPxVec3 NewCPxVec3(float x, float y, float z);
+	CPxAPI CPxInline CSTRUCT CPxVec3 NewCPxVec3(float x, float y, float z);
 
 #ifdef __cplusplus
 }

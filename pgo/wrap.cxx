@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #define CPxAPI
+#define CPxInline
 #define CSTRUCT struct
 #define CENUM enum
 #define CPxU32 uint32_t
@@ -15,8 +16,13 @@
 #include <CPxScene.h>
 #include <CPxSceneDesc.h>
 #include <CPxTolerancesScale.h>
-#include <CPxVec3.h>
 #include <CPxPlane.h>
 #include <CPxActor.h>
 #include <CPxRigidStatic.h>
+#include <CPxRigidDynamic.h>
+#include <CPxTransform.h>
 #include <CPxPvdSceneClient.h>
+#include <CExtSimpleFactory.h>
+#include <CPxGeometry.h>
+#include <CPxBoxGeometry.h>
+#include <CPxSphereGeometry.h>
