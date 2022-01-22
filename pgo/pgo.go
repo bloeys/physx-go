@@ -1,10 +1,10 @@
 package pgo
 
 /*
-#cgo CPPFLAGS: -I physx-c
+#cgo CFLAGS: -I physx-c
 #cgo LDFLAGS: -L ./libs -l physx-c
 
-#include <wrap.cxx>
+#include <wrap.c>
 #include <stdlib.h> //Needed for C.free
 */
 import "C"
