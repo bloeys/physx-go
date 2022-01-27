@@ -26,3 +26,4 @@
 #include <CPxGeometry.h>
 #include <CPxBoxGeometry.h>
 #include <CPxSphereGeometry.h>
+#include <CPxCapsuleGeometry.h>

@@ -3,6 +3,7 @@
 
 #include "CPxBoxGeometry.h"
 #include "CPxSphereGeometry.h"
+#include "CPxCapsuleGeometry.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,12 +28,14 @@ extern "C" {
 		CENUM CPxGeometryType type;
 	};
 
-	CPxAPI CPxInline CSTRUCT CPxSphereGeometry CPxGeometry_toCPxSphere(CSTRUCT CPxGeometry);
+	CPxAPI CPxInline CSTRUCT CPxSphereGeometry CPxGeometry_toCPxSphereGeometry(CSTRUCT CPxGeometry);
 	CPxAPI CPxInline CSTRUCT CPxGeometry CPxSphereGeometry_toCPxGeometry(CSTRUCT CPxSphereGeometry*);
 
-	CPxAPI CPxInline CSTRUCT CPxBoxGeometry CPxGeometry_toCPxBox(CSTRUCT CPxGeometry);
+	CPxAPI CPxInline CSTRUCT CPxBoxGeometry CPxGeometry_toCPxBoxGeometry(CSTRUCT CPxGeometry);
 	CPxAPI CPxInline CSTRUCT CPxGeometry CPxBoxGeometry_toCPxGeometry(CSTRUCT CPxBoxGeometry*);
 
+	CPxAPI CPxInline CSTRUCT CPxCapsuleGeometry CPxGeometry_toCPxCapsuleGeometry(CSTRUCT CPxGeometry);
+	CPxAPI CPxInline CSTRUCT CPxGeometry CPxCapsuleGeometry_toCPxGeometry(CSTRUCT CPxCapsuleGeometry*);
 
 #ifdef __cplusplus
 }

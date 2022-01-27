@@ -272,6 +272,22 @@ func NewBoxGeometry(hx, hy, hz float32) *BoxGeometry {
 	}
 }
 
+type CapsuleGeometry struct {
+	cCg C.struct_CPxCapsuleGeometry
+}
+
+func (bg *CapsuleGeometry) ToGeometry() *Geometry {
+	return &Geometry{
+		cG: C.CPxCapsuleGeometry_toCPxGeometry(&bg.cCg),
+	}
+}
+
+func NewCapsuleGeometry(radius, halfHeight float32) *CapsuleGeometry {
+	return &CapsuleGeometry{
+		cCg: C.NewCPxCapsuleGeometry(C.float(radius), C.float(halfHeight)),
+	}
+}
+
 type Actor struct {
 	cA C.struct_CPxActor
 }

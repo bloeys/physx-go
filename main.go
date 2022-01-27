@@ -13,7 +13,7 @@ func main() {
 
 	pvd := pgo.CreatePvd(f)
 	println("Pvd:", pvd)
-	println("connect:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
+	println("connected to PVD:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
 
 	ts := pgo.NewTolerancesScale(1, 9.81)
 	p := pgo.CreatePhysics(f, ts, false, pvd)
@@ -55,10 +55,21 @@ func main() {
 	dynBox2 := pgo.CreateDynamic(p, tr2, box.ToGeometry(), pMat, 10, shapeOffset)
 	s.AddActor(dynBox2.ToActor())
 
+	//Add sphere
+	v = pgo.NewVec3(0, 16, 0)
+	tr3 := pgo.NewTransform(v, qID)
+	dynSphere := pgo.CreateDynamic(p, tr3, pgo.NewSphereGeometry(3).ToGeometry(), pMat, 10, shapeOffset)
+	s.AddActor(dynSphere.ToActor())
+
+	//Add capsule
+	v = pgo.NewVec3(0, 20, 0)
+	tr4 := pgo.NewTransform(v, qID)
+	dynCapsule := pgo.CreateDynamic(p, tr4, pgo.NewCapsuleGeometry(0.25, 0.5).ToGeometry(), pMat, 10, shapeOffset)
+	s.AddActor(dynCapsule.ToActor())
+
 	for {
 		s.Simulate(1 / 60.0)
-		a, b := s.FetchResults(true)
-		println("a:", a, "; b:", b)
+		s.FetchResults(true)
 	}
 
 	p.Release()
