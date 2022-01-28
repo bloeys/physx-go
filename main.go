@@ -68,11 +68,20 @@ func main() {
 	s.AddActor(dynCapsule.ToActor())
 
 	//Add compound shape
+
 	dynComp := p.CreateRigidDynamic(pgo.NewTransform(pgo.NewVec3(0, 35, 0), qID))
-	pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewSphereGeometry(2).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
+
 	pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewBoxGeometry(10, 0.1, 0.1).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
+
+	someShape := pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewSphereGeometry(2).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
+	someShape.SetLocalPose(pgo.NewTransform(pgo.NewVec3(5, 0, 0), qID))
+
+	someShape = pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewSphereGeometry(2).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
+	someShape.SetLocalPose(pgo.NewTransform(pgo.NewVec3(-5, 0, 0), qID))
+
 	s.AddActor(dynComp.ToActor())
 
+	//Make some changes and print info
 	dynSphere.SetMass(1)
 	dynCapsule.SetMass(1)
 	println("Box 1 mass:", dynBox.GetMass())
@@ -84,6 +93,7 @@ func main() {
 	dynCapsule.SetLinearDamping(0.05)
 	println("Capsule linear damping B:", dynCapsule.GetLinearDamping())
 
+	//Run simulation
 	s.SetScratchBuffer(4)
 	for {
 		s.Simulate(1 / 60.0)

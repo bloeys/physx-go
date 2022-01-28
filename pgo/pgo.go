@@ -157,6 +157,16 @@ type Shape struct {
 	cShape C.struct_CPxShape
 }
 
+func (s *Shape) GetLocalPose() *Transform {
+	return &Transform{
+		cT: C.CPxShape_getLocalPose(&s.cShape),
+	}
+}
+
+func (s *Shape) SetLocalPose(tr *Transform) {
+	C.CPxShape_setLocalPose(&s.cShape, &tr.cT)
+}
+
 func CreateExclusiveShape(rigidActor RigidActor, geom *Geometry, mat *Material, shapeFlags ShapeFlags) Shape {
 	return Shape{
 		cShape: C.createExclusiveShape(rigidActor.cRa, geom.cG, mat.cM, uint32(shapeFlags)),

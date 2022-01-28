@@ -95,6 +95,16 @@ func (rd *RigidDynamic) SetGlobalPose(tr *Transform, autoAwake bool) {
 	C.CPxRigidDynamic_setGlobalPose(rd.cRd, &tr.cT, C._Bool(autoAwake))
 }
 
+func (rd *RigidDynamic) GetCMassLocalPose() *Transform {
+	return &Transform{
+		cT: C.CPxRigidDynamic_getCMassLocalPose(rd.cRd),
+	}
+}
+
+func (rd *RigidDynamic) SetCMassLocalPose(tr *Transform) {
+	C.CPxRigidDynamic_setCMassLocalPose(rd.cRd, &tr.cT)
+}
+
 func (rd *RigidDynamic) ToActor() Actor {
 	return Actor{
 		cA: C.CPxRigidDynamic_toCPxActor(rd.cRd),

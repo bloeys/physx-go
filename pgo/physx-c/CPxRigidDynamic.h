@@ -47,6 +47,9 @@ extern "C" {
 	CPxAPI CSTRUCT CPxTransform CPxRigidDynamic_getGlobalPose(CSTRUCT CPxRigidDynamic* crd);
 	CPxAPI void CPxRigidDynamic_setGlobalPose(CSTRUCT CPxRigidDynamic* crd, CSTRUCT CPxTransform* tr, bool autoAwake);
 
+	CPxAPI CSTRUCT CPxTransform CPxRigidDynamic_getCMassLocalPose(CSTRUCT CPxRigidDynamic* crd);
+	CPxAPI void CPxRigidDynamic_setCMassLocalPose(CSTRUCT CPxRigidDynamic* crd, CSTRUCT CPxTransform* tr);
+
 #ifdef __cplusplus
 }
 #endif
