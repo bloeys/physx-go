@@ -20,7 +20,14 @@ extern "C" {
 	CPxAPI CSTRUCT CPxActor CPxRigidDynamic_toCPxActor(CSTRUCT CPxRigidDynamic*);
 	CPxAPI void CPxRigidDynamic_addForce(CSTRUCT CPxRigidDynamic* crd, CSTRUCT CPxVec3* force, CENUM CPxForceMode fmode, bool autoAwake);
 	CPxAPI void CPxRigidDynamic_addTorque(CSTRUCT CPxRigidDynamic* crd, CSTRUCT CPxVec3* torque, CENUM CPxForceMode fmode, bool autoAwake);
+
+	CPxAPI void CPxRigidDynamic_setLinearDamping(CSTRUCT CPxRigidDynamic* crd, CPxReal damping);
+	CPxAPI void CPxRigidDynamic_setAngularDamping(CSTRUCT CPxRigidDynamic* crd, CPxReal damping);
+	CPxAPI CPxReal CPxRigidDynamic_getLinearDamping(CSTRUCT CPxRigidDynamic* crd);
+	CPxAPI CPxReal CPxRigidDynamic_getAngularDamping(CSTRUCT CPxRigidDynamic* crd);
+	
 	CPxAPI CSTRUCT CPxVec3 CPxRigidDynamic_getLinearVelocity(CSTRUCT CPxRigidDynamic* crd);
+	CPxAPI CSTRUCT CPxVec3 CPxRigidDynamic_getAngularVelocity(CSTRUCT CPxRigidDynamic* crd);
 
 	CPxAPI void CPxRigidDynamic_setMass(CSTRUCT CPxRigidDynamic* crd, CPxReal mass);
 	CPxAPI CPxReal CPxRigidDynamic_getMass(CSTRUCT CPxRigidDynamic* crd);

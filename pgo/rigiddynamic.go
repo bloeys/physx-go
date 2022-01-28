@@ -21,9 +21,31 @@ func (rd *RigidDynamic) AddTorque(torque *Vec3, fmode ForceMode, autoAwake bool)
 	C.CPxRigidDynamic_addTorque(rd.cRd, &torque.cV, uint32(fmode), C._Bool(autoAwake))
 }
 
+func (rd *RigidDynamic) SetLinearDamping(damping float32) {
+	C.CPxRigidDynamic_setLinearDamping(rd.cRd, C.float(damping))
+}
+
+func (rd *RigidDynamic) SetAngularDamping(damping float32) {
+	C.CPxRigidDynamic_setAngularDamping(rd.cRd, C.float(damping))
+}
+
+func (rd *RigidDynamic) GetLinearDamping() float32 {
+	return float32(C.CPxRigidDynamic_getLinearDamping(rd.cRd))
+}
+
+func (rd *RigidDynamic) GetAngularDamping() float32 {
+	return float32(C.CPxRigidDynamic_getAngularDamping(rd.cRd))
+}
+
 func (rd *RigidDynamic) GetLinearVelocity() Vec3 {
 	return Vec3{
 		cV: C.CPxRigidDynamic_getLinearVelocity(rd.cRd),
+	}
+}
+
+func (rd *RigidDynamic) GetAngularVelocity() Vec3 {
+	return Vec3{
+		cV: C.CPxRigidDynamic_getAngularVelocity(rd.cRd),
 	}
 }
 

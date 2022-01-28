@@ -74,8 +74,11 @@ func main() {
 	println("Sphere mass:", dynSphere.GetMass())
 	println("Capsule mass:", dynCapsule.GetMass())
 
-	s.SetScratchBuffer(4)
+	println("Capsule linear damping A:", dynCapsule.GetLinearDamping())
+	dynCapsule.SetLinearDamping(0.05)
+	println("Capsule linear damping B:", dynCapsule.GetLinearDamping())
 
+	s.SetScratchBuffer(4)
 	for {
 		s.Simulate(1 / 60.0)
 		s.FetchResults(true)
