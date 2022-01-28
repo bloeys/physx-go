@@ -59,6 +59,20 @@ func (rd *RigidDynamic) GetRigidDynamicLockFlags() RigidDynamicLockFlags {
 	return RigidDynamicLockFlags(C.CPxRigidDynamic_getRigidDynamicLockFlags(rd.cRd))
 }
 
+func (rd *RigidDynamic) PutToSleep() {
+	C.CPxRigidDynamic_putToSleep(rd.cRd)
+}
+
+func (rd *RigidDynamic) GetGlobalPose() *Transform {
+	return &Transform{
+		cT: C.CPxRigidDynamic_getGlobalPose(rd.cRd),
+	}
+}
+
+func (rd *RigidDynamic) SetGlobalPose(tr *Transform, autoAwake bool) {
+	C.CPxRigidDynamic_setGlobalPose(rd.cRd, &tr.cT, C._Bool(autoAwake))
+}
+
 func (rd *RigidDynamic) ToActor() *Actor {
 	return &Actor{
 		cA: C.CPxRigidDynamic_toCPxActor(rd.cRd),
