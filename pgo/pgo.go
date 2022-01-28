@@ -140,6 +140,18 @@ type Vec3 struct {
 	cV C.struct_CPxVec3
 }
 
+func (v *Vec3) X() float32 {
+	return float32(v.cV.x)
+}
+
+func (v *Vec3) Y() float32 {
+	return float32(v.cV.y)
+}
+
+func (v *Vec3) Z() float32 {
+	return float32(v.cV.z)
+}
+
 func NewVec3(x, y, z float32) *Vec3 {
 	return &Vec3{
 		cV: C.NewCPxVec3(C.float(x), C.float(y), C.float(z)),
@@ -305,21 +317,5 @@ func (rs *RigidStatic) ToActor() *Actor {
 func CreatePlane(p *Physics, plane *Plane, mat *Material) *RigidStatic {
 	return &RigidStatic{
 		cRs: C.CPxCreatePlane(p.cPhysics, plane.cP, mat.cM),
-	}
-}
-
-type RigidDynamic struct {
-	cRd *C.struct_CPxRigidDynamic
-}
-
-func (rs *RigidDynamic) ToActor() *Actor {
-	return &Actor{
-		cA: C.CPxRigidDynamic_toCPxActor(rs.cRd),
-	}
-}
-
-func CreateDynamic(p *Physics, t *Transform, g *Geometry, m *Material, density float32, shapeOffset *Transform) *RigidDynamic {
-	return &RigidDynamic{
-		cRd: C.CPxCreateDynamic(p.cPhysics, &t.cT, g.cG, m.cM, C.float(density), &shapeOffset.cT),
 	}
 }

@@ -47,26 +47,32 @@ func main() {
 	shapeOffset := pgo.NewTransform(v, qID)
 
 	box := pgo.NewBoxGeometry(0.5, 0.5, 0.5)
-	dynBox := pgo.CreateDynamic(p, tr, box.ToGeometry(), pMat, 10, shapeOffset)
+	dynBox := pgo.CreateDynamic(p, tr, box.ToGeometry(), pMat, 1, shapeOffset)
 	s.AddActor(dynBox.ToActor())
 
 	v = pgo.NewVec3(0.5, 12, 0)
 	tr2 := pgo.NewTransform(v, qID)
-	dynBox2 := pgo.CreateDynamic(p, tr2, box.ToGeometry(), pMat, 10, shapeOffset)
+	dynBox2 := pgo.CreateDynamic(p, tr2, box.ToGeometry(), pMat, 1, shapeOffset)
 	s.AddActor(dynBox2.ToActor())
 
 	//Add sphere
 	v = pgo.NewVec3(0, 16, 0)
 	tr3 := pgo.NewTransform(v, qID)
-	dynSphere := pgo.CreateDynamic(p, tr3, pgo.NewSphereGeometry(3).ToGeometry(), pMat, 10, shapeOffset)
+	dynSphere := pgo.CreateDynamic(p, tr3, pgo.NewSphereGeometry(3).ToGeometry(), pMat, 1, shapeOffset)
 	s.AddActor(dynSphere.ToActor())
 
 	//Add capsule
 	v = pgo.NewVec3(0, 20, 0)
 	tr4 := pgo.NewTransform(v, qID)
-	dynCapsule := pgo.CreateDynamic(p, tr4, pgo.NewCapsuleGeometry(0.25, 0.5).ToGeometry(), pMat, 10, shapeOffset)
+	dynCapsule := pgo.CreateDynamic(p, tr4, pgo.NewCapsuleGeometry(0.25, 0.5).ToGeometry(), pMat, 1, shapeOffset)
 	s.AddActor(dynCapsule.ToActor())
 
+	dynSphere.SetMass(1)
+	dynCapsule.SetMass(1)
+	println("Box 1 mass:", dynBox.GetMass())
+	println("Box 2 mass:", dynBox2.GetMass())
+	println("Sphere mass:", dynSphere.GetMass())
+	println("Capsule mass:", dynCapsule.GetMass())
 	for {
 		s.Simulate(1 / 60.0)
 		s.FetchResults(true)

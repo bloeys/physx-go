@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #define CPxAPI
+#define CPxInternalAPI
 #define CPxInline
 #define CSTRUCT struct
 #define CENUM enum

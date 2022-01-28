@@ -11,6 +11,7 @@ extern "C" {
 	};
 
 	CPxAPI CPxInline CSTRUCT CPxQuat NewCPxQuat(float angleRads, float x, float y, float z);
+	CPxAPI CPxInline CSTRUCT CPxQuat NewCPxQuatXYZW(float x, float y, float z, float w);
 
 #ifdef __cplusplus
 }
