@@ -95,17 +95,19 @@ func (s *Scene) AddActor(a *Actor) {
 	C.CPxScene_addActor(s.cS, a.cA)
 }
 
-// void CPxScene_simulate(CSTRUCT CPxScene*, CPxReal elapsedTime);
 func (s *Scene) Simulate(elapsedTime float32) {
 	C.CPxScene_simulate(s.cS, C.float(elapsedTime))
 }
 
-// bool CPxScene_fetchResults(struct CPxScene*, bool block, CPxU32* errorState);
 func (s *Scene) FetchResults(block bool) (bool, uint32) {
 
 	var errState uint32
 	b := C.CPxScene_fetchResults(s.cS, C._Bool(block), (*C.uint)(&errState))
 	return bool(b), errState
+}
+
+func (s *Scene) SetScratchBuffer(multiplesOf16k uint32) {
+	C.CPxScene_setScratchBuffer(s.cS, C.uint(multiplesOf16k))
 }
 
 type Physics struct {

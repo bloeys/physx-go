@@ -73,6 +73,9 @@ func main() {
 	println("Box 2 mass:", dynBox2.GetMass())
 	println("Sphere mass:", dynSphere.GetMass())
 	println("Capsule mass:", dynCapsule.GetMass())
+
+	s.SetScratchBuffer(4)
+
 	for {
 		s.Simulate(1 / 60.0)
 		s.FetchResults(true)
