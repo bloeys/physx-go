@@ -19,12 +19,19 @@
 #include <CPxTolerancesScale.h>
 #include <CPxPlane.h>
 #include <CPxActor.h>
+
 #include <CPxRigidStatic.h>
 #include <CPxRigidDynamic.h>
+#include <CPxRigidActorExt.h>
+#include <CPxShapeFlags.h>
+
 #include <CPxTransform.h>
 #include <CPxPvdSceneClient.h>
 #include <CExtSimpleFactory.h>
+
 #include <CPxGeometry.h>
 #include <CPxBoxGeometry.h>
 #include <CPxSphereGeometry.h>
 #include <CPxCapsuleGeometry.h>
+
+#include <CPxSimpleFactory.h>

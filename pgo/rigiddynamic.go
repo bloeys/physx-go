@@ -95,9 +95,15 @@ func (rd *RigidDynamic) SetGlobalPose(tr *Transform, autoAwake bool) {
 	C.CPxRigidDynamic_setGlobalPose(rd.cRd, &tr.cT, C._Bool(autoAwake))
 }
 
-func (rd *RigidDynamic) ToActor() *Actor {
-	return &Actor{
+func (rd *RigidDynamic) ToActor() Actor {
+	return Actor{
 		cA: C.CPxRigidDynamic_toCPxActor(rd.cRd),
+	}
+}
+
+func (rd *RigidDynamic) ToRigidActor() RigidActor {
+	return RigidActor{
+		cRa: C.CPxRigidDynamic_toCPxRigidActor(rd.cRd),
 	}
 }
 

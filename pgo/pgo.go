@@ -91,7 +91,7 @@ func (s *Scene) GetScenePvdClient() *PvdSceneClient {
 	}
 }
 
-func (s *Scene) AddActor(a *Actor) {
+func (s *Scene) AddActor(a Actor) {
 	C.CPxScene_addActor(s.cS, a.cA)
 }
 
@@ -126,6 +126,25 @@ func (p *Physics) CreateMaterial(staticFriction, dynamicFriction, restitution fl
 	}
 }
 
+// CPxAPI CSTRUCT CPxRigidDynamic* CPxPhysics_createRigidDynamic(CSTRUCT CPxPhysics* cp, CSTRUCT CPxTransform* ctr);
+// CPxAPI CSTRUCT CPxRigidStatic* CPxPhysics_createRigidStatic(CSTRUCT CPxPhysics* cp, CSTRUCT CPxTransform* ctr);
+
+func (p *Physics) CreateRigidDynamic(tr *Transform) *RigidDynamic {
+	return &RigidDynamic{
+		cRd: C.CPxPhysics_createRigidDynamic(p.cPhysics, &tr.cT),
+	}
+}
+
+func (p *Physics) CreateRigidStatic(tr *Transform) *RigidStatic {
+	return &RigidStatic{
+		cRs: C.CPxPhysics_createRigidStatic(p.cPhysics, &tr.cT),
+	}
+}
+
+func (p *Physics) Release() {
+	C.CPxPhysics_release(p.cPhysics)
+}
+
 func CreatePhysics(f *Foundation, ts *TolerancesScale, trackOutstandingAllocations bool, pvd *Pvd) *Physics {
 
 	p := &Physics{}
@@ -134,8 +153,14 @@ func CreatePhysics(f *Foundation, ts *TolerancesScale, trackOutstandingAllocatio
 	return p
 }
 
-func (p *Physics) Release() {
-	C.CPxPhysics_release(p.cPhysics)
+type Shape struct {
+	cShape C.struct_CPxShape
+}
+
+func CreateExclusiveShape(rigidActor RigidActor, geom *Geometry, mat *Material, shapeFlags ShapeFlags) Shape {
+	return Shape{
+		cShape: C.createExclusiveShape(rigidActor.cRa, geom.cG, mat.cM, uint32(shapeFlags)),
+	}
 }
 
 type Vec3 struct {
@@ -306,13 +331,23 @@ type Actor struct {
 	cA C.struct_CPxActor
 }
 
+type RigidActor struct {
+	cRa C.struct_CPxRigidActor
+}
+
 type RigidStatic struct {
 	cRs *C.struct_CPxRigidStatic
 }
 
-func (rs *RigidStatic) ToActor() *Actor {
-	return &Actor{
+func (rs *RigidStatic) ToActor() Actor {
+	return Actor{
 		cA: C.CPxRigidStatic_toCPxActor(rs.cRs),
+	}
+}
+
+func (rs *RigidStatic) ToRigidActor() RigidActor {
+	return RigidActor{
+		cRa: C.CPxRigidStatic_toCPxRigidActor(rs.cRs),
 	}
 }
 
