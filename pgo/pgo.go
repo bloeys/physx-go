@@ -99,6 +99,20 @@ func (s *Scene) Simulate(elapsedTime float32) {
 	C.CPxScene_simulate(s.cS, C.float(elapsedTime))
 }
 
+// void CPxScene_advance(CSTRUCT CPxScene*);
+
+func (s *Scene) Collide(elapsedTime float32) {
+	C.CPxScene_collide(s.cS, C.float(elapsedTime))
+}
+
+func (s *Scene) FetchCollision(block bool) bool {
+	return bool(C.CPxScene_fetchCollision(s.cS, C._Bool(block)))
+}
+
+func (s *Scene) Advance() {
+	C.CPxScene_advance(s.cS)
+}
+
 func (s *Scene) FetchResults(block bool) (bool, uint32) {
 
 	var errState uint32
@@ -125,9 +139,6 @@ func (p *Physics) CreateMaterial(staticFriction, dynamicFriction, restitution fl
 		cM: C.CPxPhysics_createMaterial(p.cPhysics, C.float(staticFriction), C.float(dynamicFriction), C.float(restitution)),
 	}
 }
-
-// CPxAPI CSTRUCT CPxRigidDynamic* CPxPhysics_createRigidDynamic(CSTRUCT CPxPhysics* cp, CSTRUCT CPxTransform* ctr);
-// CPxAPI CSTRUCT CPxRigidStatic* CPxPhysics_createRigidStatic(CSTRUCT CPxPhysics* cp, CSTRUCT CPxTransform* ctr);
 
 func (p *Physics) CreateRigidDynamic(tr *Transform) *RigidDynamic {
 	return &RigidDynamic{

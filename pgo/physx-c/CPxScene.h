@@ -18,6 +18,9 @@ extern "C" {
 	CPxAPI CSTRUCT CPxPvdSceneClient* CPxScene_getScenePvdClient(CSTRUCT CPxScene*);
 	CPxAPI void CPxScene_addActor(CSTRUCT CPxScene*, CSTRUCT CPxActor actor);
 	CPxAPI void CPxScene_simulate(CSTRUCT CPxScene*, CPxReal elapsedTime);
+	CPxAPI void CPxScene_collide(CSTRUCT CPxScene*, CPxReal elapsedTime);
+	CPxAPI bool CPxScene_fetchCollision(CSTRUCT CPxScene*, bool block);
+	CPxAPI void CPxScene_advance(CSTRUCT CPxScene*);
 	CPxAPI bool CPxScene_fetchResults(CSTRUCT CPxScene*, bool block, CPxU32* errorState);
 
 	/// <summary>

@@ -38,7 +38,7 @@ func main() {
 	groundPlane := pgo.CreatePlane(p, pgo.NewPlane(0, 1, 0, 0), pMat)
 	s.AddActor(groundPlane.ToActor())
 
-	//Add dynamic box
+	//Add box1
 	v := pgo.NewVec3(0, 10, 0)
 	q := pgo.NewQuat(0, 0, 1, 0)
 	tr := pgo.NewTransform(v, q)
@@ -50,6 +50,7 @@ func main() {
 	dynBox := pgo.CreateDynamic(p, tr, box.ToGeometry(), pMat, 1, shapeOffset)
 	s.AddActor(dynBox.ToActor())
 
+	//Add box2
 	v = pgo.NewVec3(0.5, 12, 0)
 	tr2 := pgo.NewTransform(v, qID)
 	dynBox2 := pgo.CreateDynamic(p, tr2, box.ToGeometry(), pMat, 1, shapeOffset)
@@ -68,7 +69,6 @@ func main() {
 	s.AddActor(dynCapsule.ToActor())
 
 	//Add compound shape
-
 	dynComp := p.CreateRigidDynamic(pgo.NewTransform(pgo.NewVec3(0, 35, 0), qID))
 
 	pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewBoxGeometry(10, 0.1, 0.1).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
@@ -96,7 +96,9 @@ func main() {
 	//Run simulation
 	s.SetScratchBuffer(4)
 	for {
-		s.Simulate(1 / 60.0)
+		s.Collide(1 / 60.0)
+		s.FetchCollision(true)
+		s.Advance()
 		s.FetchResults(true)
 	}
 
