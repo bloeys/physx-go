@@ -22,6 +22,7 @@ func main() {
 	sd := pgo.NewSceneDesc(ts)
 	sd.SetGravity(pgo.NewVec3(0, -9.8, 0))
 	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, 0).ToCpuDispatcher())
+	sd.SetOnContactCallback()
 
 	s := p.CreateScene(sd)
 	println("Scene:", s)
@@ -63,19 +64,23 @@ func main() {
 
 	ra = dynBox2.ToRigidActor()
 	ra.SetSimFilterData(&fd)
-
 	s.AddActor(dynBox2.ToActor())
 
 	//Add sphere
 	v = pgo.NewVec3(0, 16, 0)
 	tr3 := pgo.NewTransform(v, qID)
 	dynSphere := pgo.CreateDynamic(p, tr3, pgo.NewSphereGeometry(3).ToGeometry(), pMat, 1, shapeOffset)
+
+	ra = dynSphere.ToRigidActor()
+	ra.SetSimFilterData(&fd)
 	s.AddActor(dynSphere.ToActor())
 
 	//Add capsule
 	v = pgo.NewVec3(0, 20, 0)
 	tr4 := pgo.NewTransform(v, qID)
 	dynCapsule := pgo.CreateDynamic(p, tr4, pgo.NewCapsuleGeometry(0.25, 0.5).ToGeometry(), pMat, 1, shapeOffset)
+	ra = dynCapsule.ToRigidActor()
+	ra.SetSimFilterData(&fd)
 	s.AddActor(dynCapsule.ToActor())
 
 	//Add compound shape
@@ -89,6 +94,8 @@ func main() {
 	someShape = pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewSphereGeometry(2).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
 	someShape.SetLocalPose(pgo.NewTransform(pgo.NewVec3(-5, 0, 0), qID))
 
+	ra = dynComp.ToRigidActor()
+	ra.SetSimFilterData(&fd)
 	s.AddActor(dynComp.ToActor())
 
 	//Make some changes and print info

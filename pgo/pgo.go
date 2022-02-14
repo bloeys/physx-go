@@ -6,8 +6,12 @@ package pgo
 
 #include <wrap.c>
 #include <stdlib.h> //Needed for C.free
+
+//simulation event callbacks forward declarations. Actual definitions MUST be in a go different file
+void goOnContactCallback_cgo(void* pairHeader);
 */
 import "C"
+import "unsafe"
 
 type PvdInstrumentationFlag uint32
 
@@ -98,8 +102,6 @@ func (s *Scene) AddActor(a Actor) {
 func (s *Scene) Simulate(elapsedTime float32) {
 	C.CPxScene_simulate(s.cS, C.float(elapsedTime))
 }
-
-// void CPxScene_advance(CSTRUCT CPxScene*);
 
 func (s *Scene) Collide(elapsedTime float32) {
 	C.CPxScene_collide(s.cS, C.float(elapsedTime))
@@ -203,9 +205,6 @@ func (s *Shape) SetSimulationFilterData(fd *FilterData) {
 	C.CPxShape_setSimulationFilterData(&s.cShape, &fd.cFilterData)
 }
 
-// CPxAPI CSTRUCT CPxFilterData CPxShape_getSimulationFilterData(CSTRUCT CPxShape* cs);
-// CPxAPI void CPxShape_setSimulationFilterData(CSTRUCT CPxShape* cs, CSTRUCT CPxFilterData cfd);
-
 func CreateExclusiveShape(rigidActor RigidActor, geom *Geometry, mat *Material, shapeFlags ShapeFlags) Shape {
 	return Shape{
 		cShape: C.createExclusiveShape(rigidActor.cRa, geom.cG, mat.cM, uint32(shapeFlags)),
@@ -262,6 +261,15 @@ func (sd *SceneDesc) SetGravity(v *Vec3) {
 
 func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
 	C.CPxSceneDesc_set_cpuDispatcher(sd.cSD, cd.cCpuDisp)
+}
+
+//export goOnContactCallback
+func goOnContactCallback(p unsafe.Pointer) {
+	println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+}
+
+func (sd *SceneDesc) SetOnContactCallback() {
+	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
 }
 
 func NewSceneDesc(ts *TolerancesScale) *SceneDesc {
