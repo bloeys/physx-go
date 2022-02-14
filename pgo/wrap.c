@@ -35,3 +35,5 @@
 #include <CPxCapsuleGeometry.h>
 
 #include <CPxSimpleFactory.h>
+
+#include <CPxContactPairHeader.h>

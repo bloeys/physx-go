@@ -265,10 +265,21 @@ func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
 
 //export goOnContactCallback
 func goOnContactCallback(p unsafe.Pointer) {
-	println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+	cph := (*C.struct_CPxContactPairHeader)(p)
+	pairs := cph.pairs
+
+	if pairs.events == uint32(PairFlags_eNOTIFY_TOUCH_FOUND) {
+		println("touch")
+	} else if pairs.events == uint32(PairFlags_eNOTIFY_TOUCH_PERSISTS) {
+		println("persist")
+	} else if pairs.events == uint32(PairFlags_eNOTIFY_TOUCH_LOST) {
+		println("leave")
+	}
 }
 
 func (sd *SceneDesc) SetOnContactCallback() {
+
 	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
 }
 
