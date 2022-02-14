@@ -38,6 +38,9 @@ func main() {
 	groundPlane := pgo.CreatePlane(p, pgo.NewPlane(0, 1, 0, 0), pMat)
 	s.AddActor(groundPlane.ToActor())
 
+	//W0/W1 are filter groups the shape belongs to, and W2/W3 are a filter group mask
+	fd := pgo.NewFilterData(1, 1, 1, 1)
+
 	//Add box1
 	v := pgo.NewVec3(0, 10, 0)
 	q := pgo.NewQuat(0, 0, 1, 0)
@@ -48,12 +51,19 @@ func main() {
 
 	box := pgo.NewBoxGeometry(0.5, 0.5, 0.5)
 	dynBox := pgo.CreateDynamic(p, tr, box.ToGeometry(), pMat, 1, shapeOffset)
+
+	ra := dynBox.ToRigidActor()
+	ra.SetSimFilterData(&fd)
 	s.AddActor(dynBox.ToActor())
 
 	//Add box2
 	v = pgo.NewVec3(0.5, 12, 0)
 	tr2 := pgo.NewTransform(v, qID)
 	dynBox2 := pgo.CreateDynamic(p, tr2, box.ToGeometry(), pMat, 1, shapeOffset)
+
+	ra = dynBox2.ToRigidActor()
+	ra.SetSimFilterData(&fd)
+
 	s.AddActor(dynBox2.ToActor())
 
 	//Add sphere

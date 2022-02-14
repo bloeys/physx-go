@@ -164,6 +164,21 @@ func CreatePhysics(f *Foundation, ts *TolerancesScale, trackOutstandingAllocatio
 	return p
 }
 
+type FilterData struct {
+	cFilterData C.struct_CPxFilterData
+}
+
+func NewFilterData(w0, w1, w2, w3 uint32) FilterData {
+	return FilterData{
+		cFilterData: C.struct_CPxFilterData{
+			word0: C.uint(w0),
+			word1: C.uint(w1),
+			word2: C.uint(w2),
+			word3: C.uint(w3),
+		},
+	}
+}
+
 type Shape struct {
 	cShape C.struct_CPxShape
 }
@@ -177,6 +192,19 @@ func (s *Shape) GetLocalPose() *Transform {
 func (s *Shape) SetLocalPose(tr *Transform) {
 	C.CPxShape_setLocalPose(&s.cShape, &tr.cT)
 }
+
+func (s *Shape) GetSimulationFilterData() FilterData {
+	return FilterData{
+		cFilterData: C.CPxShape_getSimulationFilterData(&s.cShape),
+	}
+}
+
+func (s *Shape) SetSimulationFilterData(fd *FilterData) {
+	C.CPxShape_setSimulationFilterData(&s.cShape, &fd.cFilterData)
+}
+
+// CPxAPI CSTRUCT CPxFilterData CPxShape_getSimulationFilterData(CSTRUCT CPxShape* cs);
+// CPxAPI void CPxShape_setSimulationFilterData(CSTRUCT CPxShape* cs, CSTRUCT CPxFilterData cfd);
 
 func CreateExclusiveShape(rigidActor RigidActor, geom *Geometry, mat *Material, shapeFlags ShapeFlags) Shape {
 	return Shape{
@@ -355,6 +383,12 @@ type Actor struct {
 type RigidActor struct {
 	cRa C.struct_CPxRigidActor
 }
+
+func (ra *RigidActor) SetSimFilterData(fd *FilterData) {
+	C.CPxRigidActor_setSimFilterData(&ra.cRa, &fd.cFilterData)
+}
+
+// CPxAPI void CPxRigidActor_setSimFilterData(CSTRUCT CPxRigidActor* cra, CSTRUCT CPxFilterData* cfd);
 
 type RigidStatic struct {
 	cRs *C.struct_CPxRigidStatic
