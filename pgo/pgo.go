@@ -126,6 +126,30 @@ func (s *Scene) SetScratchBuffer(multiplesOf16k uint32) {
 	C.CPxScene_setScratchBuffer(s.cS, C.uint(multiplesOf16k))
 }
 
+//bool CPxScene_raycast(CSTRUCT CPxScene* cs, CPxVec3* origin, CPxVec3* unitDir, CPxReal distance, CPxRaycastBuffer* hit)
+func (s *Scene) Raycast(origin, unitDir *Vec3, distance float32) (bool, RaycastBuffer) {
+
+	rb := RaycastBuffer{}
+	ret := C.CPxScene_raycast(s.cS, &origin.cV, &unitDir.cV, C.float(distance), &rb.cRb)
+	return bool(ret), rb
+}
+
+type RaycastHit struct {
+	cRh *C.struct_CPxRaycastHit
+}
+
+type RaycastBuffer struct {
+	cRb *C.struct_CPxRaycastBuffer
+}
+
+func (rb *RaycastBuffer) HasBlock() bool {
+	return bool(rb.cRb.hasBlock)
+}
+
+func (rb *RaycastBuffer) GetBlock() RaycastHit {
+	return RaycastHit{}
+}
+
 type Physics struct {
 	cPhysics *C.struct_CPxPhysics
 }

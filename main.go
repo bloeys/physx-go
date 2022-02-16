@@ -1,6 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
+	"os"
+
 	"github.com/bloeys/physx-go/pgo"
 )
 
@@ -111,12 +115,19 @@ func main() {
 	println("Capsule linear damping B:", dynCapsule.GetLinearDamping())
 
 	//Run simulation
+	r := bufio.NewReader(os.Stdin)
 	s.SetScratchBuffer(4)
 	for {
 		s.Collide(1 / 60.0)
 		s.FetchCollision(true)
 		s.Advance()
 		s.FetchResults(true)
+
+		rHit, _ := s.Raycast(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9)
+		fmt.Printf("\nRaycast hit: %v\n", rHit)
+
+		// println("Press enter...")
+		// r.ReadBytes('\n')
 	}
 
 	p.Release()

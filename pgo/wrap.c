@@ -7,6 +7,7 @@
 #define CENUM enum
 #define CPxU32 uint32_t
 #define CPxReal float
+#define CPxF32 float
 
 #include <CPxFoundation.h>
 #include <CPxPvd.h>
