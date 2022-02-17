@@ -10,7 +10,12 @@ extern "C" {
 		CPxReal radius;
 	};
 
-	CPxAPI CPxInline CSTRUCT CPxSphereGeometry NewCPxSphereGeometry(CPxReal radius);
+	CPxAPI CPxInline CSTRUCT CPxSphereGeometry NewCPxSphereGeometry(CPxReal radius)
+	{
+		CSTRUCT CPxSphereGeometry c;
+		c.radius = radius;
+		return c;
+	}
 
 #ifdef __cplusplus
 }

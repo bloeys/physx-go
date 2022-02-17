@@ -28,14 +28,55 @@ extern "C" {
 		CENUM CPxGeometryType type;
 	};
 
-	CPxAPI CPxInline CSTRUCT CPxSphereGeometry CPxGeometry_toCPxSphereGeometry(CSTRUCT CPxGeometry);
-	CPxAPI CPxInline CSTRUCT CPxGeometry CPxSphereGeometry_toCPxGeometry(CSTRUCT CPxSphereGeometry*);
+	//
+	// CPxSphereGeometry
+	//
+	CPxAPI CPxInline CSTRUCT CPxSphereGeometry CPxGeometry_toCPxSphereGeometry(CSTRUCT CPxGeometry cg)
+	{
+		return *(CSTRUCT CPxSphereGeometry*)(cg.obj);
+		//return *static_cast<CSTRUCT CPxSphereGeometry*>(cg.obj);
+	}
 
-	CPxAPI CPxInline CSTRUCT CPxBoxGeometry CPxGeometry_toCPxBoxGeometry(CSTRUCT CPxGeometry);
-	CPxAPI CPxInline CSTRUCT CPxGeometry CPxBoxGeometry_toCPxGeometry(CSTRUCT CPxBoxGeometry*);
+	CPxAPI CPxInline CSTRUCT CPxGeometry CPxSphereGeometry_toCPxGeometry(CSTRUCT CPxSphereGeometry* csg)
+	{
+		CSTRUCT CPxGeometry g;
+		g.obj = csg;
+		g.type = CPxGeometryType_eSPHERE;
+		return g;
+	}
 
-	CPxAPI CPxInline CSTRUCT CPxCapsuleGeometry CPxGeometry_toCPxCapsuleGeometry(CSTRUCT CPxGeometry);
-	CPxAPI CPxInline CSTRUCT CPxGeometry CPxCapsuleGeometry_toCPxGeometry(CSTRUCT CPxCapsuleGeometry*);
+	//
+	// CPxBoxGeometry
+	//
+	CPxAPI CPxInline CSTRUCT CPxBoxGeometry CPxGeometry_toCPxBoxGeometry(CSTRUCT CPxGeometry cg)
+	{
+		return *(CSTRUCT CPxBoxGeometry*)(cg.obj);
+		//return *static_cast<CSTRUCT CPxBoxGeometry*>(cg.obj);
+	}
+
+	CPxAPI CPxInline CSTRUCT CPxGeometry CPxBoxGeometry_toCPxGeometry(CSTRUCT CPxBoxGeometry* cbg)
+	{
+		CSTRUCT CPxGeometry g;
+		g.obj = cbg;
+		g.type = CPxGeometryType_eBOX;
+		return g;
+	}
+
+	//
+	// CPxCapsuleGeometry
+	//
+	CPxAPI CPxInline CSTRUCT CPxCapsuleGeometry CPxGeometry_toCPxCapsuleGeometry(CSTRUCT CPxGeometry cg)
+	{
+		return *(CSTRUCT CPxCapsuleGeometry*)(cg.obj);
+	}
+
+	CPxAPI CPxInline CSTRUCT CPxGeometry CPxCapsuleGeometry_toCPxGeometry(CSTRUCT CPxCapsuleGeometry* ccg)
+	{
+		CSTRUCT CPxGeometry g;
+		g.obj = ccg;
+		g.type = CPxGeometryType_eCAPSULE;
+		return g;
+	}
 
 #ifdef __cplusplus
 }

@@ -10,7 +10,13 @@ extern "C" {
 		CPxReal radius, halfHeight;
 	};
 
-	CPxAPI CPxInline CSTRUCT CPxCapsuleGeometry NewCPxCapsuleGeometry(CPxReal radius, CPxReal halfHeight);
+	CPxAPI CPxInline CSTRUCT CPxCapsuleGeometry NewCPxCapsuleGeometry(CPxReal radius, CPxReal halfHeight)
+	{
+		CSTRUCT CPxCapsuleGeometry c;
+		c.radius = radius;
+		c.halfHeight = halfHeight;
+		return c;
+	}
 
 #ifdef __cplusplus
 }

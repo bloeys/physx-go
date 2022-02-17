@@ -269,34 +269,55 @@ extern "C" {
 	CPxPairFlags_eTRIGGER_DEFAULT = CPxPairFlags_eNOTIFY_TOUCH_FOUND | CPxPairFlags_eNOTIFY_TOUCH_LOST | CPxPairFlags_eDETECT_DISCRETE_CONTACT
 	};
 
-	//TODO: uintxx_t not available again
+	struct CPxContactPairPoint
+	{
+		/**
+		\brief The position of the contact point between the shapes, in world space.
+		*/
+		CSTRUCT CPxVec3	position;
+
+		/**
+		\brief The separation of the shapes at the contact point.  A negative separation denotes a penetration.
+		*/
+		CPxReal	separation;
+
+		/**
+		\brief The normal of the contacting surfaces at the contact point. The normal direction points from the second shape to the first shape.
+		*/
+		CSTRUCT CPxVec3	normal;
+
+		/**
+		\brief The surface index of shape 0 at the contact point.  This is used to identify the surface material.
+		*/
+		CPxU32   internalFaceIndex0;
+
+		/**
+		\brief The impulse applied at the contact point, in world space. Divide by the simulation time step to get a force value.
+		*/
+		CSTRUCT CPxVec3	impulse;
+
+		/**
+		\brief The surface index of shape 1 at the contact point.  This is used to identify the surface material.
+		*/
+		CPxU32   internalFaceIndex1;
+	};
+
 	struct CPxContactPair
 	{
 		CSTRUCT CPxShape shapes[2];
 
-		char* contactPatches;
-		//const PxU8* contactPatches;
-
-		char* contactPoints;
-		//const PxU8* contactPoints;
-
+		CPxU8* contactPatches;
+		CPxU8* contactPoints;
 		CPxReal* contactImpulses;
+		CPxU32 requiredBufferSize;
+		CPxU8 contactCount;
+		CPxU8 patchCount;
+		CPxU16 contactStreamSize;
 
-		unsigned int requiredBufferSize;
-		//CPxU32 requiredBufferSize;
-
-		char contactCount;
-		//PxU8 contactCount;
-
-		char patchCount;
-		//PxU8 patchCount;
-
-		short contactStreamSize;
-		//PxU16 contactStreamSize;
-
-		CENUM CPxContactPairFlag flags;
 		CENUM CPxPairFlags events;
+		CENUM CPxContactPairFlag flags;
 
+		CSTRUCT	CPxContactPairPoint* extractedContactPoints;
 	};
 
 	enum CPxContactPairHeaderFlag
@@ -309,17 +330,13 @@ extern "C" {
 	{
 		CSTRUCT CPxRigidActor actors[2];
 
-		char* extraDataStream;
-		short extraDataStreamSize;
-		/*CPxU8* extraDataStream;
-		CPxU16 extraDataStreamSize;*/
+		CPxU8* extraDataStream;
+		CPxU16 extraDataStreamSize;
 
 		CENUM CPxContactPairHeaderFlag	flags;
 
 		CSTRUCT CPxContactPair* pairs;
-
-		unsigned int nbPairs;
-		//CPxU32 nbPairs;
+		CPxU32 nbPairs;
 	};
 
 #ifdef __cplusplus

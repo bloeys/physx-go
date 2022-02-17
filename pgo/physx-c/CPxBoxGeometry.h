@@ -10,7 +10,15 @@ extern "C" {
 		float hx, hy, hz;
 	};
 
-	CPxAPI CPxInline CSTRUCT CPxBoxGeometry NewCPxBoxGeometry(float hx, float hy, float hz);
+	CPxAPI CPxInline CSTRUCT CPxBoxGeometry NewCPxBoxGeometry(float hx, float hy, float hz)
+	{
+		CSTRUCT CPxBoxGeometry cbg;
+		cbg.hx = hx;
+		cbg.hy = hy;
+		cbg.hz = hz;
+
+		return cbg;
+	}
 
 #ifdef __cplusplus
 }

@@ -1,12 +1,21 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-
 	"github.com/bloeys/physx-go/pgo"
 )
+
+func contactHandler(cph pgo.ContactPairHeader) {
+
+	pairs := cph.GetPairs()
+	for i := 0; i < len(pairs); i++ {
+
+		points := pairs[i].GetContactPoints()
+		for j := 0; j < pairs[i].GetContactPointCount(); j++ {
+			pos := points[j].GetPos()
+			println("Contact at pos:", pos.String())
+		}
+	}
+}
 
 func main() {
 	f := pgo.CreateFoundation()
@@ -26,7 +35,7 @@ func main() {
 	sd := pgo.NewSceneDesc(ts)
 	sd.SetGravity(pgo.NewVec3(0, -9.8, 0))
 	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, 0).ToCpuDispatcher())
-	sd.SetOnContactCallback()
+	sd.SetOnContactCallback(contactHandler)
 
 	s := p.CreateScene(sd)
 	println("Scene:", s)
@@ -115,17 +124,16 @@ func main() {
 	println("Capsule linear damping B:", dynCapsule.GetLinearDamping())
 
 	//Run simulation
-	r := bufio.NewReader(os.Stdin)
+	// r := bufio.NewReader(os.Stdin)
 	s.SetScratchBuffer(4)
 	for {
-		s.Collide(1 / 60.0)
+		s.Collide(1 / 50.0)
 		s.FetchCollision(true)
 		s.Advance()
 		s.FetchResults(true)
 
-		rHit, _ := s.Raycast(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9)
-		fmt.Printf("\nRaycast hit: %v\n", rHit)
-
+		s.Raycast(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9)
+		// fmt.Printf("\nRaycast hit: %v\n", rHit)
 		// println("Press enter...")
 		// r.ReadBytes('\n')
 	}

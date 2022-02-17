@@ -2,12 +2,14 @@
 #include <stdbool.h>
 #define CPxAPI
 #define CPxInternalAPI
-#define CPxInline
+#define CPxInline inline
 #define CSTRUCT struct
 #define CENUM enum
 #define CPxU32 uint32_t
 #define CPxReal float
 #define CPxF32 float
+#define CPxU8 uint8_t
+#define CPxU16 uint16_t
 
 #include <CPxFoundation.h>
 #include <CPxPvd.h>

@@ -11,15 +11,14 @@ package pgo
 void goOnContactCallback_cgo(void* pairHeader);
 */
 import "C"
-import "unsafe"
+import (
+	"unsafe"
 
-type PvdInstrumentationFlag uint32
+	"github.com/bloeys/gglm/gglm"
+)
 
-const (
-	PvdInstrumentationFlag_eDEBUG   PvdInstrumentationFlag = 1 << 0
-	PvdInstrumentationFlag_ePROFILE PvdInstrumentationFlag = 1 << 1
-	PvdInstrumentationFlag_eMEMORY  PvdInstrumentationFlag = 1 << 2
-	PvdInstrumentationFlag_eALL     PvdInstrumentationFlag = (PvdInstrumentationFlag_eDEBUG | PvdInstrumentationFlag_ePROFILE | PvdInstrumentationFlag_eMEMORY)
+var (
+	contactCallback func(ContactPairHeader) = func(ContactPairHeader) {}
 )
 
 type Foundation struct {
@@ -79,10 +78,12 @@ type TolerancesScale struct {
 }
 
 func NewTolerancesScale(length, speed float32) *TolerancesScale {
-
-	ts := &TolerancesScale{}
-	ts.cTolScale = C.NewCPxTolerancesScale(C.float(length), C.float(speed))
-	return ts
+	return &TolerancesScale{
+		cTolScale: C.struct_CPxTolerancesScale{
+			length: C.float(length),
+			speed:  C.float(speed),
+		},
+	}
 }
 
 type Scene struct {
@@ -126,11 +127,13 @@ func (s *Scene) SetScratchBuffer(multiplesOf16k uint32) {
 	C.CPxScene_setScratchBuffer(s.cS, C.uint(multiplesOf16k))
 }
 
-//bool CPxScene_raycast(CSTRUCT CPxScene* cs, CPxVec3* origin, CPxVec3* unitDir, CPxReal distance, CPxRaycastBuffer* hit)
+//TODO: Implement
 func (s *Scene) Raycast(origin, unitDir *Vec3, distance float32) (bool, RaycastBuffer) {
 
 	rb := RaycastBuffer{}
 	ret := C.CPxScene_raycast(s.cS, &origin.cV, &unitDir.cV, C.float(distance), &rb.cRb)
+	// x := unsafe.Slice(rb.cRb.touches, rb.cRb.nbTouches)
+
 	return bool(ret), rb
 }
 
@@ -253,7 +256,11 @@ func (v *Vec3) Z() float32 {
 
 func NewVec3(x, y, z float32) *Vec3 {
 	return &Vec3{
-		cV: C.NewCPxVec3(C.float(x), C.float(y), C.float(z)),
+		cV: C.struct_CPxVec3{
+			x: C.float(x),
+			y: C.float(y),
+			z: C.float(z),
+		},
 	}
 }
 
@@ -287,23 +294,10 @@ func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
 	C.CPxSceneDesc_set_cpuDispatcher(sd.cSD, cd.cCpuDisp)
 }
 
-//export goOnContactCallback
-func goOnContactCallback(p unsafe.Pointer) {
-
-	cph := (*C.struct_CPxContactPairHeader)(p)
-	pairs := cph.pairs
-
-	if pairs.events == uint32(PairFlags_eNOTIFY_TOUCH_FOUND) {
-		println("touch")
-	} else if pairs.events == uint32(PairFlags_eNOTIFY_TOUCH_PERSISTS) {
-		println("persist")
-	} else if pairs.events == uint32(PairFlags_eNOTIFY_TOUCH_LOST) {
-		println("leave")
-	}
-}
-
-func (sd *SceneDesc) SetOnContactCallback() {
-
+//SetOnContactCallback sets the GLOBAL contact callback handler. Physx-c currently only supports 1 contact callback handler.
+//Setting a contact callback handler overrides the previous one. Only the most recent one gets called.
+func (sd *SceneDesc) SetOnContactCallback(cb func(ContactPairHeader)) {
+	contactCallback = cb
 	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
 }
 
@@ -311,6 +305,107 @@ func NewSceneDesc(ts *TolerancesScale) *SceneDesc {
 	return &SceneDesc{
 		cSD: C.NewCPxSceneDesc(ts.cTolScale),
 	}
+}
+
+type ContactPairHeader struct {
+	cCPH *C.struct_CPxContactPairHeader
+}
+
+func (cph *ContactPairHeader) GetRigidActors() [2]RigidActor {
+	return [2]RigidActor{
+		{
+			cRa: cph.cCPH.actors[0],
+		},
+		{
+			cRa: cph.cCPH.actors[1],
+		},
+	}
+}
+
+func (cph *ContactPairHeader) GetFlags() ContactPairHeaderFlag {
+	return ContactPairHeaderFlag(cph.cCPH.flags)
+}
+
+func (cph *ContactPairHeader) GetnbPairs() int {
+	return int(cph.cCPH.nbPairs)
+}
+
+func (cph *ContactPairHeader) GetPairs() []ContactPair {
+
+	contactPairs := make([]ContactPair, cph.cCPH.nbPairs)
+	cPairs := unsafe.Slice(cph.cCPH.pairs, cph.cCPH.nbPairs)
+	for i := 0; i < len(contactPairs); i++ {
+		contactPairs[i].cCp = &cPairs[i]
+	}
+
+	return contactPairs
+}
+
+type ContactPair struct {
+	cCp *C.struct_CPxContactPair
+}
+
+func (cp *ContactPair) GetFlags() ContactPairFlag {
+	return ContactPairFlag(cp.cCp.flags)
+}
+
+func (cp *ContactPair) GetEvents() PairFlags {
+	return PairFlags(cp.cCp.events)
+}
+
+func (cp *ContactPair) GetPatchCount() int {
+	return int(cp.cCp.patchCount)
+}
+
+func (cp *ContactPair) GetContactPointCount() int {
+	return int(cp.cCp.contactCount)
+}
+
+func (cp *ContactPair) GetContactPoints() []ContactPairPoint {
+
+	ccps := make([]ContactPairPoint, cp.cCp.contactCount)
+	extractedPoints := unsafe.Slice(cp.cCp.extractedContactPoints, cp.cCp.contactCount)
+	for i := 0; i < len(extractedPoints); i++ {
+		ccps[i].cCpp = &extractedPoints[i]
+	}
+
+	return ccps
+}
+
+type ContactPairPoint struct {
+	cCpp *C.struct_CPxContactPairPoint
+}
+
+func (cpp *ContactPairPoint) GetPos() gglm.Vec3 {
+	return gglm.Vec3{Data: [3]float32{
+		float32(cpp.cCpp.position.x),
+		float32(cpp.cCpp.position.y),
+		float32(cpp.cCpp.position.z),
+	}}
+}
+
+func (cpp *ContactPairPoint) GetImpulse() gglm.Vec3 {
+	return gglm.Vec3{Data: [3]float32{
+		float32(cpp.cCpp.impulse.x),
+		float32(cpp.cCpp.impulse.y),
+		float32(cpp.cCpp.impulse.z),
+	}}
+}
+
+func (cpp *ContactPairPoint) GetNormal() gglm.Vec3 {
+	return gglm.Vec3{Data: [3]float32{
+		float32(cpp.cCpp.normal.x),
+		float32(cpp.cCpp.normal.y),
+		float32(cpp.cCpp.normal.z),
+	}}
+}
+
+func (cpp *ContactPairPoint) GetSeparation() float32 {
+	return float32(cpp.cCpp.separation)
+}
+
+func (cpp *ContactPairPoint) GetInternalFaceIndices() (float32, float32) {
+	return float32(cpp.cCpp.internalFaceIndex0), float32(cpp.cCpp.internalFaceIndex1)
 }
 
 type PvdSceneFlag uint32
@@ -383,7 +478,9 @@ func (sg *SphereGeometry) ToGeometry() *Geometry {
 // struct CPxSphereGeometry NewCPxSphereGeometry(CPxReal radius);
 func NewSphereGeometry(radius float32) *SphereGeometry {
 	return &SphereGeometry{
-		cSg: C.NewCPxSphereGeometry(C.float(radius)),
+		cSg: C.struct_CPxSphereGeometry{
+			radius: C.float(radius),
+		},
 	}
 }
 
@@ -399,7 +496,11 @@ func (bg *BoxGeometry) ToGeometry() *Geometry {
 
 func NewBoxGeometry(hx, hy, hz float32) *BoxGeometry {
 	return &BoxGeometry{
-		cBg: C.NewCPxBoxGeometry(C.float(hx), C.float(hy), C.float(hz)),
+		cBg: C.struct_CPxBoxGeometry{
+			hx: C.float(hx),
+			hy: C.float(hy),
+			hz: C.float(hz),
+		},
 	}
 }
 
@@ -415,7 +516,10 @@ func (bg *CapsuleGeometry) ToGeometry() *Geometry {
 
 func NewCapsuleGeometry(radius, halfHeight float32) *CapsuleGeometry {
 	return &CapsuleGeometry{
-		cCg: C.NewCPxCapsuleGeometry(C.float(radius), C.float(halfHeight)),
+		cCg: C.struct_CPxCapsuleGeometry{
+			radius:     C.float(radius),
+			halfHeight: C.float(halfHeight),
+		},
 	}
 }
 

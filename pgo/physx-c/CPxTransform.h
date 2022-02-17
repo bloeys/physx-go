@@ -14,7 +14,14 @@ extern "C" {
 		CSTRUCT CPxQuat q;
 	};
 
-	CPxAPI CPxInline CSTRUCT CPxTransform NewCPxTransform(CSTRUCT CPxVec3*, CSTRUCT CPxQuat*);
+	CPxAPI CPxInline CSTRUCT CPxTransform NewCPxTransform(CSTRUCT CPxVec3* v, CSTRUCT CPxQuat* q)
+	{
+		CSTRUCT CPxTransform t;
+		t.p = *v;
+		t.q = *q;
+
+		return t;
+	}
 #ifdef __cplusplus
 }
 #endif
