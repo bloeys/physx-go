@@ -1,20 +1,22 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/bloeys/physx-go/pgo"
 )
 
 func contactHandler(cph pgo.ContactPairHeader) {
 
-	pairs := cph.GetPairs()
-	for i := 0; i < len(pairs); i++ {
+	// pairs := cph.GetPairs()
+	// for i := 0; i < len(pairs); i++ {
 
-		points := pairs[i].GetContactPoints()
-		for j := 0; j < pairs[i].GetContactPointCount(); j++ {
-			pos := points[j].GetPos()
-			println("Contact at pos:", pos.String())
-		}
-	}
+	// 	points := pairs[i].GetContactPoints()
+	// 	for j := 0; j < pairs[i].GetContactPointCount(); j++ {
+	// 		pos := points[j].GetPos()
+	// 		println("Contact at pos:", pos.String())
+	// 	}
+	// }
 }
 
 func main() {
@@ -132,7 +134,13 @@ func main() {
 		s.Advance()
 		s.FetchResults(true)
 
-		s.Raycast(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9)
+		_, b := s.Raycast(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9)
+		if b.HasBlock() {
+			block := b.GetBlock()
+			d := block.GetDistance()
+			pos := block.GetPos()
+			fmt.Printf("Raycast hit at dist (%v) and post %v\n", d, pos.String())
+		}
 		// fmt.Printf("\nRaycast hit: %v\n", rHit)
 		// println("Press enter...")
 		// r.ReadBytes('\n')

@@ -127,18 +127,12 @@ func (s *Scene) SetScratchBuffer(multiplesOf16k uint32) {
 	C.CPxScene_setScratchBuffer(s.cS, C.uint(multiplesOf16k))
 }
 
-//TODO: Implement
 func (s *Scene) Raycast(origin, unitDir *Vec3, distance float32) (bool, RaycastBuffer) {
 
 	rb := RaycastBuffer{}
 	ret := C.CPxScene_raycast(s.cS, &origin.cV, &unitDir.cV, C.float(distance), &rb.cRb)
-	// x := unsafe.Slice(rb.cRb.touches, rb.cRb.nbTouches)
 
 	return bool(ret), rb
-}
-
-type RaycastHit struct {
-	cRh *C.struct_CPxRaycastHit
 }
 
 type RaycastBuffer struct {
@@ -150,7 +144,76 @@ func (rb *RaycastBuffer) HasBlock() bool {
 }
 
 func (rb *RaycastBuffer) GetBlock() RaycastHit {
-	return RaycastHit{}
+	return RaycastHit{
+		cRh: &rb.cRb.block,
+	}
+}
+
+func (rb *RaycastBuffer) GetnbTouches() int {
+	return int(rb.cRb.nbTouches)
+}
+
+func (rb *RaycastBuffer) GetTouches() []RaycastHit {
+
+	hits := make([]RaycastHit, rb.cRb.nbTouches)
+	touches := unsafe.Slice(rb.cRb.touches, rb.cRb.nbTouches)
+	for i := 0; i < len(hits); i++ {
+		hits[i].cRh = &touches[i]
+	}
+
+	return hits
+}
+
+type RaycastHit struct {
+	cRh *C.struct_CPxRaycastHit
+}
+
+func (rh *RaycastHit) GetActor() RigidActor {
+	return RigidActor{
+		cRa: rh.cRh.actor,
+	}
+}
+
+func (rh *RaycastHit) GetShape() Shape {
+	return Shape{
+		cShape: rh.cRh.shape,
+	}
+}
+
+func (rh *RaycastHit) GetDistance() float32 {
+	return float32(rh.cRh.distance)
+}
+
+func (rh *RaycastHit) GetFaceIndex() uint {
+	return uint(rh.cRh.faceIndex)
+}
+
+func (rh *RaycastHit) GetHitFlags() HitFlag {
+	return HitFlag(rh.cRh.flags)
+}
+
+func (rh *RaycastHit) GetNormal() gglm.Vec3 {
+	return gglm.Vec3{
+		Data: [3]float32{
+			float32(rh.cRh.normal.x),
+			float32(rh.cRh.normal.y),
+			float32(rh.cRh.normal.z),
+		},
+	}
+}
+
+func (rh *RaycastHit) GetPos() gglm.Vec3 {
+	return gglm.Vec3{
+		Data: [3]float32{
+			float32(rh.cRh.position.x),
+			float32(rh.cRh.position.y),
+			float32(rh.cRh.position.z),
+		},
+	}
+}
+
+func (rh *RaycastHit) GetUV() (float32, float32) {
+	return float32(rh.cRh.u), float32(rh.cRh.v)
 }
 
 type Physics struct {
