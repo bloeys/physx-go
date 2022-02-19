@@ -127,6 +127,9 @@ func main() {
 
 	//Run simulation
 	// r := bufio.NewReader(os.Stdin)
+	raycastBuffer := pgo.NewRaycastBuffer(1)
+	defer raycastBuffer.Release()
+
 	s.SetScratchBuffer(4)
 	for {
 		s.Collide(1 / 50.0)
@@ -134,9 +137,9 @@ func main() {
 		s.Advance()
 		s.FetchResults(true)
 
-		_, b := s.Raycast(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9)
-		if b.HasBlock() {
-			block := b.GetBlock()
+		s.RaycastWithHitBuffer(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9, raycastBuffer, 1)
+		if raycastBuffer.HasBlock() {
+			block := raycastBuffer.GetBlock()
 			d := block.GetDistance()
 			pos := block.GetPos()
 			fmt.Printf("Raycast hit at dist (%v) and post %v\n", d, pos.String())

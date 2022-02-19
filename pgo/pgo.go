@@ -135,6 +135,12 @@ func (s *Scene) Raycast(origin, unitDir *Vec3, distance float32) (bool, RaycastB
 	return bool(ret), rb
 }
 
+func (s *Scene) RaycastWithHitBuffer(origin, unitDir *Vec3, distance float32, rb *RaycastBuffer, touchesToRead uint) bool {
+
+	ret := C.CPxScene_raycastWithHitBuffer(s.cS, &origin.cV, &unitDir.cV, C.float(distance), rb.cRb, C.uint(touchesToRead))
+	return bool(ret)
+}
+
 type RaycastBuffer struct {
 	cRb *C.struct_CPxRaycastBuffer
 }
@@ -162,6 +168,19 @@ func (rb *RaycastBuffer) GetTouches() []RaycastHit {
 	}
 
 	return hits
+}
+
+func (rb *RaycastBuffer) Release() {
+	C.CPxRaycastBuffer_release(rb.cRb)
+}
+
+func NewRaycastBuffer(maxTouches uint32) *RaycastBuffer {
+
+	rb := &RaycastBuffer{
+		cRb: C.NewCPxRaycastBufferWithAlloc(C.uint(maxTouches)),
+	}
+
+	return rb
 }
 
 type RaycastHit struct {
