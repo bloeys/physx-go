@@ -99,7 +99,7 @@ func main() {
 	s.AddActor(dynCapsule.ToActor())
 
 	//Add compound shape
-	dynComp := p.CreateRigidDynamic(pgo.NewTransform(pgo.NewVec3(0, 35, 0), qID))
+	dynComp := p.CreateRigidDynamic(pgo.NewTransform(pgo.NewVec3(2.5, 35, 0), qID))
 
 	pgo.CreateExclusiveShape(dynComp.ToRigidActor(), pgo.NewBoxGeometry(10, 0.1, 0.1).ToGeometry(), pMat, pgo.ShapeFlags_eSCENE_QUERY_SHAPE|pgo.ShapeFlags_eSIMULATION_SHAPE|pgo.ShapeFlags_eVISUALIZATION)
 

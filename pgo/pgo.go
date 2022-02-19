@@ -241,7 +241,7 @@ type Physics struct {
 
 func (p *Physics) CreateScene(sd *SceneDesc) *Scene {
 	return &Scene{
-		cS: C.CPxPhysics_createScene(p.cPhysics, sd.cSD),
+		cS: C.CPxPhysics_createScene(p.cPhysics, &sd.cSD),
 	}
 }
 
@@ -365,22 +365,22 @@ func DefaultCpuDispatcherCreate(numThreads, affinityMasks uint32) *DefaultCpuDis
 }
 
 type SceneDesc struct {
-	cSD *C.struct_CPxSceneDesc
+	cSD C.struct_CPxSceneDesc
 }
 
 func (sd *SceneDesc) SetGravity(v *Vec3) {
-	C.CPxSceneDesc_set_gravity(sd.cSD, v.cV)
+	C.CPxSceneDesc_set_gravity(&sd.cSD, v.cV)
 }
 
 func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
-	C.CPxSceneDesc_set_cpuDispatcher(sd.cSD, cd.cCpuDisp)
+	C.CPxSceneDesc_set_cpuDispatcher(&sd.cSD, cd.cCpuDisp)
 }
 
 //SetOnContactCallback sets the GLOBAL contact callback handler. Physx-c currently only supports 1 contact callback handler.
 //Setting a contact callback handler overrides the previous one. Only the most recent one gets called.
 func (sd *SceneDesc) SetOnContactCallback(cb func(ContactPairHeader)) {
 	contactCallback = cb
-	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
+	C.CPxSceneDesc_set_onContactCallback(&sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
 }
 
 func NewSceneDesc(ts *TolerancesScale) *SceneDesc {
