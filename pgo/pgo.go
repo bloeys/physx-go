@@ -511,10 +511,11 @@ type Material struct {
 }
 
 type Plane struct {
-	cP *C.struct_CPxPlane
+	cP C.struct_CPxPlane
 }
 
 func NewPlane(nx, ny, nz, distance float32) *Plane {
+
 	return &Plane{
 		cP: C.NewCPxPlane(C.float(nx), C.float(ny), C.float(nz), C.float(distance)),
 	}
@@ -637,6 +638,6 @@ func (rs *RigidStatic) ToRigidActor() RigidActor {
 
 func CreatePlane(p *Physics, plane *Plane, mat *Material) *RigidStatic {
 	return &RigidStatic{
-		cRs: C.CPxCreatePlane(p.cPhysics, plane.cP, mat.cM),
+		cRs: C.CPxCreatePlane(p.cPhysics, &plane.cP, mat.cM),
 	}
 }
