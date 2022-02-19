@@ -515,7 +515,7 @@ type Plane struct {
 }
 
 func NewPlane(nx, ny, nz, distance float32) *Plane {
-
+	//If we don't keep a space between return and func definition this crashes?????
 	return &Plane{
 		cP: C.NewCPxPlane(C.float(nx), C.float(ny), C.float(nz), C.float(distance)),
 	}
