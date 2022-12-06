@@ -149,7 +149,7 @@ func main() {
 		// r.ReadBytes('\n')
 	}
 
-	p.Release()
-	pvd.Release()
-	pvdTr.Release()
+	// p.Release()
+	// pvd.Release()
+	// pvdTr.Release()
 }
