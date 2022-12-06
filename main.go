@@ -39,10 +39,10 @@ func main() {
 	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, 0).ToCpuDispatcher())
 	sd.SetOnContactCallback(contactHandler)
 
-	s := p.CreateScene(sd)
-	println("Scene:", s)
+	scene := p.CreateScene(sd)
+	println("Scene:", scene)
 
-	scenePvdClient := s.GetScenePvdClient()
+	scenePvdClient := scene.GetScenePvdClient()
 	println("ScenePvdClient:", scenePvdClient)
 
 	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONSTRAINTS, true)
@@ -52,7 +52,7 @@ func main() {
 	//Add plane
 	pMat := p.CreateMaterial(0.5, 0.5, 0.6)
 	groundPlane := pgo.CreatePlane(p, pgo.NewPlane(0, 1, 0, 0), pMat)
-	s.AddActor(groundPlane.ToActor())
+	scene.AddActor(groundPlane.ToActor())
 
 	//W0/W1 are filter groups the shape belongs to, and W2/W3 are a filter group mask
 	fd := pgo.NewFilterData(1, 1, 1, 1)
@@ -70,7 +70,7 @@ func main() {
 
 	ra := dynBox.ToRigidActor()
 	ra.SetSimFilterData(&fd)
-	s.AddActor(dynBox.ToActor())
+	scene.AddActor(dynBox.ToActor())
 
 	//Add box2
 	v = pgo.NewVec3(0.5, 12, 0)
@@ -79,7 +79,7 @@ func main() {
 
 	ra = dynBox2.ToRigidActor()
 	ra.SetSimFilterData(&fd)
-	s.AddActor(dynBox2.ToActor())
+	scene.AddActor(dynBox2.ToActor())
 
 	//Add sphere
 	v = pgo.NewVec3(0, 16, 0)
@@ -88,7 +88,7 @@ func main() {
 
 	ra = dynSphere.ToRigidActor()
 	ra.SetSimFilterData(&fd)
-	s.AddActor(dynSphere.ToActor())
+	scene.AddActor(dynSphere.ToActor())
 
 	//Add capsule
 	v = pgo.NewVec3(0, 20, 0)
@@ -96,7 +96,7 @@ func main() {
 	dynCapsule := pgo.CreateDynamic(p, tr4, pgo.NewCapsuleGeometry(0.25, 0.5).ToGeometry(), pMat, 1, shapeOffset)
 	ra = dynCapsule.ToRigidActor()
 	ra.SetSimFilterData(&fd)
-	s.AddActor(dynCapsule.ToActor())
+	scene.AddActor(dynCapsule.ToActor())
 
 	//Add compound shape
 	dynComp := p.CreateRigidDynamic(pgo.NewTransform(pgo.NewVec3(2.5, 35, 0), qID))
@@ -111,7 +111,7 @@ func main() {
 
 	ra = dynComp.ToRigidActor()
 	ra.SetSimFilterData(&fd)
-	s.AddActor(dynComp.ToActor())
+	scene.AddActor(dynComp.ToActor())
 
 	//Make some changes and print info
 	dynSphere.SetMass(1)
@@ -130,14 +130,14 @@ func main() {
 	raycastBuffer := pgo.NewRaycastBuffer(1)
 	defer raycastBuffer.Release()
 
-	s.SetScratchBuffer(4)
+	scene.SetScratchBuffer(4)
 	for {
-		s.Collide(1 / 50.0)
-		s.FetchCollision(true)
-		s.Advance()
-		s.FetchResults(true)
+		scene.Collide(1 / 50.0)
+		scene.FetchCollision(true)
+		scene.Advance()
+		scene.FetchResults(true)
 
-		s.RaycastWithHitBuffer(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9, raycastBuffer, 1)
+		scene.RaycastWithHitBuffer(pgo.NewVec3(0, 0, 0), pgo.NewVec3(0, 1, 0), 9, raycastBuffer, 1)
 		if raycastBuffer.HasBlock() {
 			block := raycastBuffer.GetBlock()
 			d := block.GetDistance()

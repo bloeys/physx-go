@@ -270,7 +270,11 @@ func (p *Physics) Release() {
 func CreatePhysics(f *Foundation, ts *TolerancesScale, trackOutstandingAllocations bool, pvd *Pvd) *Physics {
 
 	p := &Physics{}
-	p.cPhysics = C.CPxCreatePhysics(f.cFoundation, ts.cTolScale, C._Bool(trackOutstandingAllocations), pvd.cPvd)
+	if pvd != nil {
+		p.cPhysics = C.CPxCreatePhysics(f.cFoundation, ts.cTolScale, C._Bool(trackOutstandingAllocations), pvd.cPvd)
+	} else {
+		p.cPhysics = C.CPxCreatePhysics(f.cFoundation, ts.cTolScale, C._Bool(trackOutstandingAllocations), nil)
+	}
 
 	return p
 }
@@ -376,8 +380,8 @@ func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
 	C.CPxSceneDesc_set_cpuDispatcher(&sd.cSD, cd.cCpuDisp)
 }
 
-//SetOnContactCallback sets the GLOBAL contact callback handler. Physx-c currently only supports 1 contact callback handler.
-//Setting a contact callback handler overrides the previous one. Only the most recent one gets called.
+// SetOnContactCallback sets the GLOBAL contact callback handler. Physx-c currently only supports 1 contact callback handler.
+// Setting a contact callback handler overrides the previous one. Only the most recent one gets called.
 func (sd *SceneDesc) SetOnContactCallback(cb func(ContactPairHeader)) {
 	contactCallback = cb
 	C.CPxSceneDesc_set_onContactCallback(&sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
