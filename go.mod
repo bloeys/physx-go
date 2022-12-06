@@ -1,5 +1,5 @@
 module github.com/bloeys/physx-go
 
-go 1.17
+go 1.18
 
-require github.com/bloeys/gglm v0.3.1
+require github.com/bloeys/gglm v0.43.0
