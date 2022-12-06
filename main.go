@@ -48,6 +48,7 @@ func main() {
 	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONSTRAINTS, true)
 	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONTACTS, true)
 	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_SCENEQUERIES, true)
+	scenePvdClient.Release()
 
 	//Add plane
 	pMat := p.CreateMaterial(0.5, 0.5, 0.6)

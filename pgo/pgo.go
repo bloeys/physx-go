@@ -510,6 +510,10 @@ func (p *PvdSceneClient) SetScenePvdFlag(flag PvdSceneFlag, value bool) {
 	C.CPxPvdSceneClient_setScenePvdFlag(p.cPvdSceneClient, uint32(flag), C._Bool(value))
 }
 
+func (p *PvdSceneClient) Release() {
+	C.CPxPvdSceneClient_release(p.cPvdSceneClient)
+}
+
 type Material struct {
 	cM *C.struct_CPxMaterial
 }
