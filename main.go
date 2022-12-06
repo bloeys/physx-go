@@ -36,7 +36,7 @@ func main() {
 
 	sd := pgo.NewSceneDesc(ts)
 	sd.SetGravity(pgo.NewVec3(0, -9.8, 0))
-	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, 0).ToCpuDispatcher())
+	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, nil).ToCpuDispatcher())
 	sd.SetOnContactCallback(contactHandler)
 
 	scene := p.CreateScene(sd)

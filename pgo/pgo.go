@@ -362,9 +362,24 @@ func (d *DefaultCpuDispatcher) ToCpuDispatcher() *CpuDispatcher {
 	return &CpuDispatcher{cCpuDisp: (*C.struct_CPxCpuDispatcher)(d.cDefCpuDisp)}
 }
 
-func DefaultCpuDispatcherCreate(numThreads, affinityMasks uint32) *DefaultCpuDispatcher {
+// DefaultCpuDispatcherCreate sets the number of threads used by physX.
+// If affinityMasksPerThread is nil/zero then default masks are used, otherwise the size of the array
+// must match the number of threads
+func DefaultCpuDispatcherCreate(numThreads uint32, affinityMasksPerThread []uint32) *DefaultCpuDispatcher {
+
+	if len(affinityMasksPerThread) == 0 {
+		return &DefaultCpuDispatcher{
+			cDefCpuDisp: C.CPxDefaultCpuDispatcherCreate(C.uint(numThreads), nil),
+		}
+	}
+
+	arr := make([]C.uint, len(affinityMasksPerThread))
+	for i := 0; i < len(arr); i++ {
+		arr[i] = C.uint(affinityMasksPerThread[i])
+	}
+
 	return &DefaultCpuDispatcher{
-		cDefCpuDisp: C.CPxDefaultCpuDispatcherCreate(C.uint(numThreads), C.uint(affinityMasks)),
+		cDefCpuDisp: C.CPxDefaultCpuDispatcherCreate(C.uint(numThreads), &arr[0]),
 	}
 }
 
