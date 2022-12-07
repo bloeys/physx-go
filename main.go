@@ -21,13 +21,11 @@ func contactHandler(cph pgo.ContactPairHeader) {
 
 func main() {
 
-	const enablePvd = true
-
 	f := pgo.CreateFoundation()
 	println("foundation:", f)
 
 	var pvd *pgo.Pvd
-	if enablePvd {
+	if pgo.PvdSupported {
 		pvdTr := pgo.DefaultPvdSocketTransportCreate("127.0.0.1", 5425, 100000)
 		println("Pvd transport:", pvdTr)
 
@@ -48,7 +46,7 @@ func main() {
 	scene := p.CreateScene(sd)
 	println("Scene:", scene)
 
-	if enablePvd {
+	if pgo.PvdSupported {
 		scenePvdClient := scene.GetScenePvdClient()
 		println("ScenePvdClient:", scenePvdClient)
 
