@@ -20,15 +20,21 @@ func contactHandler(cph pgo.ContactPairHeader) {
 }
 
 func main() {
+
+	const enablePvd = true
+
 	f := pgo.CreateFoundation()
 	println("foundation:", f)
 
-	pvdTr := pgo.DefaultPvdSocketTransportCreate("127.0.0.1", 5425, 100000)
-	println("Pvd transport:", pvdTr)
+	var pvd *pgo.Pvd
+	if enablePvd {
+		pvdTr := pgo.DefaultPvdSocketTransportCreate("127.0.0.1", 5425, 100000)
+		println("Pvd transport:", pvdTr)
 
-	pvd := pgo.CreatePvd(f)
-	println("Pvd:", pvd)
-	println("connected to PVD:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
+		pvd = pgo.CreatePvd(f)
+		println("Pvd:", pvd)
+		println("connected to PVD:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
+	}
 
 	ts := pgo.NewTolerancesScale(1, 9.81)
 	p := pgo.CreatePhysics(f, ts, false, pvd)
@@ -42,13 +48,15 @@ func main() {
 	scene := p.CreateScene(sd)
 	println("Scene:", scene)
 
-	scenePvdClient := scene.GetScenePvdClient()
-	println("ScenePvdClient:", scenePvdClient)
+	if enablePvd {
+		scenePvdClient := scene.GetScenePvdClient()
+		println("ScenePvdClient:", scenePvdClient)
 
-	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONSTRAINTS, true)
-	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONTACTS, true)
-	scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_SCENEQUERIES, true)
-	scenePvdClient.Release()
+		scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONSTRAINTS, true)
+		scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONTACTS, true)
+		scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_SCENEQUERIES, true)
+		scenePvdClient.Release()
+	}
 
 	//Add plane
 	pMat := p.CreateMaterial(0.5, 0.5, 0.6)
@@ -149,8 +157,4 @@ func main() {
 		// println("Press enter...")
 		// r.ReadBytes('\n')
 	}
-
-	// p.Release()
-	// pvd.Release()
-	// pvdTr.Release()
 }
