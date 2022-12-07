@@ -2,7 +2,11 @@ package pgo
 
 /*
 #cgo CFLAGS: -I physx-c
-#cgo LDFLAGS: -L ./libs -l physx-c
+#cgo LDFLAGS: -L ./libs
+
+// NOTE: If you change this update pgo.go as well
+#cgo windows,amd64 LDFLAGS: -l physxc_checked_windows_amd64
+#cgo windows,amd64,physx_release LDFLAGS: -l physxc_release_windows_amd64
 
 #include <wrap.c>
 #include <stdlib.h> //Needed for C.free
