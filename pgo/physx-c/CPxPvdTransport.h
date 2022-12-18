@@ -9,8 +9,7 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI CSTRUCT CPxPvdTransport* CPxDefaultPvdSocketTransportCreate(const char* address, int port, int timeoutMillis);
-	CPxAPI void CPxPvdTransport_release(CSTRUCT CPxPvdTransport* cppt);
+	CPxAPI CSTRUCT CPxPvdTransport CPxDefaultPvdSocketTransportCreate(const char* address, int port, int timeoutMillis);
 #ifdef __cplusplus
 }
 #endif

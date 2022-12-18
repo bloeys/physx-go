@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-	CPxAPI CSTRUCT CPxRigidDynamic* CPxCreateDynamic(CSTRUCT CPxPhysics* sdk, CSTRUCT CPxTransform* transform, CSTRUCT CPxGeometry geometry, CSTRUCT CPxMaterial* material, CPxReal density, CSTRUCT CPxTransform* shapeOffset);
+	CPxAPI CSTRUCT CPxRigidDynamic CPxCreateDynamic(CSTRUCT CPxPhysics sdk, CSTRUCT CPxTransform* transform, CSTRUCT CPxGeometry geometry, CSTRUCT CPxMaterial material, CPxReal density, CSTRUCT CPxTransform* shapeOffset);
 
 #ifdef __cplusplus
 }

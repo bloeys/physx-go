@@ -14,7 +14,7 @@ package pgo
 import "C"
 
 type RigidDynamic struct {
-	cRd *C.struct_CPxRigidDynamic
+	cRd C.struct_CPxRigidDynamic
 }
 
 func (rd *RigidDynamic) AddForce(force *Vec3, fmode ForceMode, autoAwake bool) {
@@ -121,8 +121,8 @@ func (rd *RigidDynamic) ToRigidActor() RigidActor {
 	}
 }
 
-func CreateDynamic(p *Physics, t *Transform, g *Geometry, m *Material, density float32, shapeOffset *Transform) *RigidDynamic {
-	return &RigidDynamic{
+func CreateDynamic(p Physics, t *Transform, g Geometry, m Material, density float32, shapeOffset *Transform) RigidDynamic {
+	return RigidDynamic{
 		cRd: C.CPxCreateDynamic(p.cPhysics, &t.cT, g.cG, m.cM, C.float(density), &shapeOffset.cT),
 	}
 }

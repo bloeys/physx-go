@@ -21,8 +21,8 @@ extern "C" {
 	/// <param name="CPxTolerancesScale"></param>
 	/// <returns></returns>
 	CPxAPI CSTRUCT CPxSceneDesc NewCPxSceneDesc(CSTRUCT CPxTolerancesScale);
-	CPxAPI void CPxSceneDesc_set_gravity(CSTRUCT CPxSceneDesc*, CSTRUCT CPxVec3);
-	CPxAPI void CPxSceneDesc_set_cpuDispatcher(CSTRUCT CPxSceneDesc*, CSTRUCT CPxCpuDispatcher*);
+	CPxAPI void CPxSceneDesc_set_gravity(CSTRUCT CPxSceneDesc, CSTRUCT CPxVec3);
+	CPxAPI void CPxSceneDesc_set_cpuDispatcher(CSTRUCT CPxSceneDesc, CSTRUCT CPxCpuDispatcher);
 
 
 	//CPxSceneDesc_set_onContactCallback sets the contact callback handler of the given scene descriptor.
@@ -30,8 +30,8 @@ extern "C" {
 	//Therefore, the callback handler MUST copy data it wishes to keep for longer than the lifetime of the callback handler, as the memory it was handed might be reused/freed.
 	//
 	//NOTE: This function assumes you are using the default physx-c callback handler. Do NOT use this function if you set 'sceneDesc->simulationEventCallback' with your own custom implementation.
-	CPxAPI void CPxSceneDesc_set_onContactCallback(CSTRUCT CPxSceneDesc*, CPxonContactCallback cb);
-	CPxAPI void FreeCPxSceneDesc(CSTRUCT CPxSceneDesc*);
+	CPxAPI void CPxSceneDesc_set_onContactCallback(CSTRUCT CPxSceneDesc, CPxonContactCallback cb);
+	CPxAPI void FreeCPxSceneDesc(CSTRUCT CPxSceneDesc);
 
 #ifdef __cplusplus
 }

@@ -10,8 +10,6 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI void CPxMaterial_release(CSTRUCT CPxMaterial*);
-
 #ifdef __cplusplus
 }
 #endif

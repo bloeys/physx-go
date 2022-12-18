@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-	CPxAPI CSTRUCT CPxRigidStatic* CPxCreatePlane(CSTRUCT CPxPhysics* sdk, CSTRUCT CPxPlane* plane, CSTRUCT CPxMaterial* material);
+	CPxAPI CSTRUCT CPxRigidStatic CPxCreatePlane(CSTRUCT CPxPhysics sdk, CSTRUCT CPxPlane* plane, CSTRUCT CPxMaterial material);
 
 #ifdef __cplusplus
 }

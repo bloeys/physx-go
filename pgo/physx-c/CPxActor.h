@@ -10,7 +10,7 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI void CPxActor_release(CSTRUCT CPxActor*);
+	CPxAPI void CPxActor_release(CSTRUCT CPxActor);
 
 #ifdef __cplusplus
 }

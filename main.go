@@ -14,7 +14,7 @@ func contactHandler(cph pgo.ContactPairHeader) {
 	// 	points := pairs[i].GetContactPoints()
 	// 	for j := 0; j < pairs[i].GetContactPointCount(); j++ {
 	// 		pos := points[j].GetPos()
-	// 		println("Contact at pos:", pos.String())
+	// 		fmt.Println("Contact at pos:", pos.String())
 	// 	}
 	// }
 }
@@ -22,38 +22,39 @@ func contactHandler(cph pgo.ContactPairHeader) {
 func main() {
 
 	f := pgo.CreateFoundation()
-	println("foundation:", f)
+	fmt.Println("foundation:", f)
 
 	var pvd *pgo.Pvd
 	if pgo.PvdSupported {
 		pvdTr := pgo.DefaultPvdSocketTransportCreate("127.0.0.1", 5425, 100000)
-		println("Pvd transport:", pvdTr)
+		fmt.Println("Pvd transport:", pvdTr)
 
 		pvd = pgo.CreatePvd(f)
-		println("Pvd:", pvd)
-		println("connected to PVD:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
+		fmt.Println("Pvd:", pvd)
+		fmt.Println("connected to PVD:", pvd.Connect(pvdTr, pgo.PvdInstrumentationFlag_eALL))
 	}
 
 	ts := pgo.NewTolerancesScale(1, 9.81)
 	p := pgo.CreatePhysics(f, ts, false, pvd)
-	println("Physics:", p)
+	fmt.Println("Physics:", p)
 
 	sd := pgo.NewSceneDesc(ts)
 	sd.SetGravity(pgo.NewVec3(0, -9.8, 0))
-	sd.SetCpuDispatcher(pgo.DefaultCpuDispatcherCreate(2, nil).ToCpuDispatcher())
+
+	defaultCpuDispatcher := pgo.DefaultCpuDispatcherCreate(2, nil)
+	sd.SetCpuDispatcher(defaultCpuDispatcher.ToCpuDispatcher())
 	sd.SetOnContactCallback(contactHandler)
 
 	scene := p.CreateScene(sd)
-	println("Scene:", scene)
+	fmt.Println("Scene:", scene)
 
 	if pgo.PvdSupported {
 		scenePvdClient := scene.GetScenePvdClient()
-		println("ScenePvdClient:", scenePvdClient)
+		fmt.Println("ScenePvdClient:", scenePvdClient)
 
 		scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONSTRAINTS, true)
 		scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_CONTACTS, true)
 		scenePvdClient.SetScenePvdFlag(pgo.PvdSceneFlag_eTRANSMIT_SCENEQUERIES, true)
-		scenePvdClient.Release()
 	}
 
 	//Add plane
@@ -123,14 +124,14 @@ func main() {
 	//Make some changes and print info
 	dynSphere.SetMass(1)
 	dynCapsule.SetMass(1)
-	println("Box 1 mass:", dynBox.GetMass())
-	println("Box 2 mass:", dynBox2.GetMass())
-	println("Sphere mass:", dynSphere.GetMass())
-	println("Capsule mass:", dynCapsule.GetMass())
+	fmt.Println("Box 1 mass:", dynBox.GetMass())
+	fmt.Println("Box 2 mass:", dynBox2.GetMass())
+	fmt.Println("Sphere mass:", dynSphere.GetMass())
+	fmt.Println("Capsule mass:", dynCapsule.GetMass())
 
-	println("Capsule linear damping A:", dynCapsule.GetLinearDamping())
+	fmt.Println("Capsule linear damping A:", dynCapsule.GetLinearDamping())
 	dynCapsule.SetLinearDamping(0.05)
-	println("Capsule linear damping B:", dynCapsule.GetLinearDamping())
+	fmt.Println("Capsule linear damping B:", dynCapsule.GetLinearDamping())
 
 	//Run simulation
 	// r := bufio.NewReader(os.Stdin)
@@ -152,7 +153,7 @@ func main() {
 			fmt.Printf("Raycast hit at dist (%v) and post %v\n", d, pos.String())
 		}
 		// fmt.Printf("\nRaycast hit: %v\n", rHit)
-		// println("Press enter...")
+		// fmt.Println("Press enter...")
 		// r.ReadBytes('\n')
 	}
 }

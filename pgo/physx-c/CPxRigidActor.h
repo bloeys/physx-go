@@ -13,7 +13,7 @@ extern "C" {
 	};
 
 	//Sets the CPxFilterData on all the shapes of the actor.
-	CPxAPI void CPxRigidActor_setSimFilterData(CSTRUCT CPxRigidActor* cra, CSTRUCT CPxFilterData* cfd);
+	CPxAPI void CPxRigidActor_setSimFilterData(CSTRUCT CPxRigidActor cra, CSTRUCT CPxFilterData cfd);
 
 #ifdef __cplusplus
 }

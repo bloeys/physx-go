@@ -11,9 +11,9 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI CSTRUCT CPxDefaultCpuDispatcher* CPxDefaultCpuDispatcherCreate(CPxU32 numThreads, CPxU32* affinityMasks);
-	CPxAPI CSTRUCT CPxCpuDispatcher* CPxDefaultCpuDispatcher_toCPxCpuDispatcher(CSTRUCT CPxDefaultCpuDispatcher* cdcd);
-	CPxAPI void CPxDefaultCpuDispatcher_release(CSTRUCT CPxDefaultCpuDispatcher* cdcd);
+	CPxAPI CSTRUCT CPxDefaultCpuDispatcher CPxDefaultCpuDispatcherCreate(CPxU32 numThreads, CPxU32* affinityMasks);
+	CPxAPI CSTRUCT CPxCpuDispatcher CPxDefaultCpuDispatcher_toCPxCpuDispatcher(CSTRUCT CPxDefaultCpuDispatcher cdcd);
+	CPxAPI void CPxDefaultCpuDispatcher_release(CSTRUCT CPxDefaultCpuDispatcher cdcd);
 
 #ifdef __cplusplus
 }

@@ -9,8 +9,8 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI CSTRUCT CPxFoundation* CPxCreateFoundation();
-	CPxAPI void CPxFoundation_release(CSTRUCT CPxFoundation* cpf);
+	CPxAPI CSTRUCT CPxFoundation CPxCreateFoundation();
+	CPxAPI void CPxFoundation_release(CSTRUCT CPxFoundation cpf);
 #ifdef __cplusplus
 }
 #endif

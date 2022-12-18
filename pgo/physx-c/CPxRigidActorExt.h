@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-	CPxAPI CSTRUCT CPxShape createExclusiveShape(CSTRUCT CPxRigidActor actor, CSTRUCT CPxGeometry geometry, CSTRUCT CPxMaterial* material, CENUM CPxShapeFlags shapeFlags);
+	CPxAPI CSTRUCT CPxShape createExclusiveShape(CSTRUCT CPxRigidActor actor, CSTRUCT CPxGeometry geometry, CSTRUCT CPxMaterial material, CENUM CPxShapeFlags shapeFlags);
 
 #ifdef __cplusplus
 }

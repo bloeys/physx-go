@@ -26,26 +26,26 @@ var (
 )
 
 type Foundation struct {
-	cFoundation *C.struct_CPxFoundation
+	cFoundation C.struct_CPxFoundation
 }
 
 func (f *Foundation) Release() {
 	C.CPxFoundation_release(f.cFoundation)
 }
 
-func CreateFoundation() *Foundation {
+func CreateFoundation() Foundation {
 
-	f := &Foundation{}
+	f := Foundation{}
 	f.cFoundation = C.CPxCreateFoundation()
 
 	return f
 }
 
 type Pvd struct {
-	cPvd *C.struct_CPxPvd
+	cPvd C.struct_CPxPvd
 }
 
-func (p *Pvd) Connect(pvdTr *PvdTransport, instFlag PvdInstrumentationFlag) bool {
+func (p *Pvd) Connect(pvdTr PvdTransport, instFlag PvdInstrumentationFlag) bool {
 	return bool(C.CPxPvd_connect(p.cPvd, pvdTr.cPvdTr, uint32(instFlag)))
 }
 
@@ -53,7 +53,7 @@ func (p *Pvd) Release() {
 	C.CPxPvd_release(p.cPvd)
 }
 
-func CreatePvd(f *Foundation) *Pvd {
+func CreatePvd(f Foundation) *Pvd {
 
 	p := &Pvd{}
 	p.cPvd = C.CPxCreatePvd(f.cFoundation)
@@ -62,17 +62,13 @@ func CreatePvd(f *Foundation) *Pvd {
 }
 
 type PvdTransport struct {
-	cPvdTr *C.struct_CPxPvdTransport
+	cPvdTr C.struct_CPxPvdTransport
 }
 
-func (p *PvdTransport) Release() {
-	C.CPxPvdTransport_release(p.cPvdTr)
-}
-
-func DefaultPvdSocketTransportCreate(host string, port, timeoutMillis int) *PvdTransport {
+func DefaultPvdSocketTransportCreate(host string, port, timeoutMillis int) PvdTransport {
 
 	//This CString should NOT be freed because its stored internally. If this is freed connection to PVD will fail
-	p := &PvdTransport{}
+	p := PvdTransport{}
 	p.cPvdTr = C.CPxDefaultPvdSocketTransportCreate(C.CString(host), C.int(port), C.int(timeoutMillis))
 	return p
 }
@@ -81,8 +77,8 @@ type TolerancesScale struct {
 	cTolScale C.struct_CPxTolerancesScale
 }
 
-func NewTolerancesScale(length, speed float32) *TolerancesScale {
-	return &TolerancesScale{
+func NewTolerancesScale(length, speed float32) TolerancesScale {
+	return TolerancesScale{
 		cTolScale: C.struct_CPxTolerancesScale{
 			length: C.float(length),
 			speed:  C.float(speed),
@@ -91,11 +87,11 @@ func NewTolerancesScale(length, speed float32) *TolerancesScale {
 }
 
 type Scene struct {
-	cS *C.struct_CPxScene
+	cS C.struct_CPxScene
 }
 
-func (s *Scene) GetScenePvdClient() *PvdSceneClient {
-	return &PvdSceneClient{
+func (s *Scene) GetScenePvdClient() PvdSceneClient {
+	return PvdSceneClient{
 		cPvdSceneClient: C.CPxScene_getScenePvdClient(s.cS),
 	}
 }
@@ -139,7 +135,7 @@ func (s *Scene) Raycast(origin, unitDir *Vec3, distance float32) (bool, RaycastB
 	return bool(ret), rb
 }
 
-func (s *Scene) RaycastWithHitBuffer(origin, unitDir *Vec3, distance float32, rb *RaycastBuffer, touchesToRead uint) bool {
+func (s *Scene) RaycastWithHitBuffer(origin, unitDir *Vec3, distance float32, rb RaycastBuffer, touchesToRead uint) bool {
 
 	ret := C.CPxScene_raycastWithHitBuffer(s.cS, &origin.cV, &unitDir.cV, C.float(distance), rb.cRb, C.uint(touchesToRead))
 	return bool(ret)
@@ -178,9 +174,9 @@ func (rb *RaycastBuffer) Release() {
 	C.CPxRaycastBuffer_release(rb.cRb)
 }
 
-func NewRaycastBuffer(maxTouches uint32) *RaycastBuffer {
+func NewRaycastBuffer(maxTouches uint32) RaycastBuffer {
 
-	rb := &RaycastBuffer{
+	rb := RaycastBuffer{
 		cRb: C.NewCPxRaycastBufferWithAlloc(C.uint(maxTouches)),
 	}
 
@@ -240,29 +236,29 @@ func (rh *RaycastHit) GetUV() (float32, float32) {
 }
 
 type Physics struct {
-	cPhysics *C.struct_CPxPhysics
+	cPhysics C.struct_CPxPhysics
 }
 
-func (p *Physics) CreateScene(sd *SceneDesc) *Scene {
-	return &Scene{
-		cS: C.CPxPhysics_createScene(p.cPhysics, &sd.cSD),
+func (p *Physics) CreateScene(sd SceneDesc) Scene {
+	return Scene{
+		cS: C.CPxPhysics_createScene(p.cPhysics, sd.cSD),
 	}
 }
 
-func (p *Physics) CreateMaterial(staticFriction, dynamicFriction, restitution float32) *Material {
-	return &Material{
+func (p *Physics) CreateMaterial(staticFriction, dynamicFriction, restitution float32) Material {
+	return Material{
 		cM: C.CPxPhysics_createMaterial(p.cPhysics, C.float(staticFriction), C.float(dynamicFriction), C.float(restitution)),
 	}
 }
 
-func (p *Physics) CreateRigidDynamic(tr *Transform) *RigidDynamic {
-	return &RigidDynamic{
+func (p *Physics) CreateRigidDynamic(tr *Transform) RigidDynamic {
+	return RigidDynamic{
 		cRd: C.CPxPhysics_createRigidDynamic(p.cPhysics, &tr.cT),
 	}
 }
 
-func (p *Physics) CreateRigidStatic(tr *Transform) *RigidStatic {
-	return &RigidStatic{
+func (p *Physics) CreateRigidStatic(tr *Transform) RigidStatic {
+	return RigidStatic{
 		cRs: C.CPxPhysics_createRigidStatic(p.cPhysics, &tr.cT),
 	}
 }
@@ -271,11 +267,11 @@ func (p *Physics) Release() {
 	C.CPxPhysics_release(p.cPhysics)
 }
 
-func CreatePhysics(f *Foundation, ts *TolerancesScale, trackOutstandingAllocations bool, pvd *Pvd) *Physics {
+func CreatePhysics(f Foundation, ts TolerancesScale, trackOutstandingAllocations bool, pvd *Pvd) Physics {
 
-	p := &Physics{}
+	p := Physics{}
 	if pvd != nil {
-		p.cPhysics = C.CPxCreatePhysics(f.cFoundation, ts.cTolScale, C._Bool(trackOutstandingAllocations), pvd.cPvd)
+		p.cPhysics = C.CPxCreatePhysics(f.cFoundation, ts.cTolScale, C._Bool(trackOutstandingAllocations), &pvd.cPvd)
 	} else {
 		p.cPhysics = C.CPxCreatePhysics(f.cFoundation, ts.cTolScale, C._Bool(trackOutstandingAllocations), nil)
 	}
@@ -304,25 +300,25 @@ type Shape struct {
 
 func (s *Shape) GetLocalPose() *Transform {
 	return &Transform{
-		cT: C.CPxShape_getLocalPose(&s.cShape),
+		cT: C.CPxShape_getLocalPose(s.cShape),
 	}
 }
 
 func (s *Shape) SetLocalPose(tr *Transform) {
-	C.CPxShape_setLocalPose(&s.cShape, &tr.cT)
+	C.CPxShape_setLocalPose(s.cShape, &tr.cT)
 }
 
 func (s *Shape) GetSimulationFilterData() FilterData {
 	return FilterData{
-		cFilterData: C.CPxShape_getSimulationFilterData(&s.cShape),
+		cFilterData: C.CPxShape_getSimulationFilterData(s.cShape),
 	}
 }
 
 func (s *Shape) SetSimulationFilterData(fd *FilterData) {
-	C.CPxShape_setSimulationFilterData(&s.cShape, &fd.cFilterData)
+	C.CPxShape_setSimulationFilterData(s.cShape, &fd.cFilterData)
 }
 
-func CreateExclusiveShape(rigidActor RigidActor, geom *Geometry, mat *Material, shapeFlags ShapeFlags) Shape {
+func CreateExclusiveShape(rigidActor RigidActor, geom Geometry, mat Material, shapeFlags ShapeFlags) Shape {
 	return Shape{
 		cShape: C.createExclusiveShape(rigidActor.cRa, geom.cG, mat.cM, uint32(shapeFlags)),
 	}
@@ -355,24 +351,24 @@ func NewVec3(x, y, z float32) *Vec3 {
 }
 
 type CpuDispatcher struct {
-	cCpuDisp *C.struct_CPxCpuDispatcher
+	cCpuDisp C.struct_CPxCpuDispatcher
 }
 
 type DefaultCpuDispatcher struct {
-	cDefCpuDisp *C.struct_CPxDefaultCpuDispatcher
+	cDefCpuDisp C.struct_CPxDefaultCpuDispatcher
 }
 
-func (d *DefaultCpuDispatcher) ToCpuDispatcher() *CpuDispatcher {
-	return &CpuDispatcher{cCpuDisp: (*C.struct_CPxCpuDispatcher)(d.cDefCpuDisp)}
+func (d *DefaultCpuDispatcher) ToCpuDispatcher() CpuDispatcher {
+	return CpuDispatcher{cCpuDisp: C.CPxDefaultCpuDispatcher_toCPxCpuDispatcher(d.cDefCpuDisp)}
 }
 
 // DefaultCpuDispatcherCreate sets the number of threads used by physX.
 // If affinityMasksPerThread is nil/zero then default masks are used, otherwise the size of the array
 // must match the number of threads
-func DefaultCpuDispatcherCreate(numThreads uint32, affinityMasksPerThread []uint32) *DefaultCpuDispatcher {
+func DefaultCpuDispatcherCreate(numThreads uint32, affinityMasksPerThread []uint32) DefaultCpuDispatcher {
 
 	if len(affinityMasksPerThread) == 0 {
-		return &DefaultCpuDispatcher{
+		return DefaultCpuDispatcher{
 			cDefCpuDisp: C.CPxDefaultCpuDispatcherCreate(C.uint(numThreads), nil),
 		}
 	}
@@ -382,7 +378,7 @@ func DefaultCpuDispatcherCreate(numThreads uint32, affinityMasksPerThread []uint
 		arr[i] = C.uint(affinityMasksPerThread[i])
 	}
 
-	return &DefaultCpuDispatcher{
+	return DefaultCpuDispatcher{
 		cDefCpuDisp: C.CPxDefaultCpuDispatcherCreate(C.uint(numThreads), &arr[0]),
 	}
 }
@@ -392,22 +388,22 @@ type SceneDesc struct {
 }
 
 func (sd *SceneDesc) SetGravity(v *Vec3) {
-	C.CPxSceneDesc_set_gravity(&sd.cSD, v.cV)
+	C.CPxSceneDesc_set_gravity(sd.cSD, v.cV)
 }
 
-func (sd *SceneDesc) SetCpuDispatcher(cd *CpuDispatcher) {
-	C.CPxSceneDesc_set_cpuDispatcher(&sd.cSD, cd.cCpuDisp)
+func (sd *SceneDesc) SetCpuDispatcher(cd CpuDispatcher) {
+	C.CPxSceneDesc_set_cpuDispatcher(sd.cSD, cd.cCpuDisp)
 }
 
 // SetOnContactCallback sets the GLOBAL contact callback handler. Physx-c currently only supports 1 contact callback handler.
 // Setting a contact callback handler overrides the previous one. Only the most recent one gets called.
 func (sd *SceneDesc) SetOnContactCallback(cb func(ContactPairHeader)) {
 	contactCallback = cb
-	C.CPxSceneDesc_set_onContactCallback(&sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
+	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
 }
 
-func NewSceneDesc(ts *TolerancesScale) *SceneDesc {
-	return &SceneDesc{
+func NewSceneDesc(ts TolerancesScale) SceneDesc {
+	return SceneDesc{
 		cSD: C.NewCPxSceneDesc(ts.cTolScale),
 	}
 }
@@ -522,19 +518,15 @@ const (
 )
 
 type PvdSceneClient struct {
-	cPvdSceneClient *C.struct_CPxPvdSceneClient
+	cPvdSceneClient C.struct_CPxPvdSceneClient
 }
 
 func (p *PvdSceneClient) SetScenePvdFlag(flag PvdSceneFlag, value bool) {
 	C.CPxPvdSceneClient_setScenePvdFlag(p.cPvdSceneClient, uint32(flag), C._Bool(value))
 }
 
-func (p *PvdSceneClient) Release() {
-	C.CPxPvdSceneClient_release(p.cPvdSceneClient)
-}
-
 type Material struct {
-	cM *C.struct_CPxMaterial
+	cM C.struct_CPxMaterial
 }
 
 type Plane struct {
@@ -578,16 +570,24 @@ type SphereGeometry struct {
 	cSg C.struct_CPxSphereGeometry
 }
 
+func (sg *SphereGeometry) GetRadius() float32 {
+	return float32(sg.cSg.radius)
+}
+
+func (sg *SphereGeometry) SetRadius(r float32) {
+	sg.cSg.radius = C.float(r)
+}
+
 // struct CPxGeometry CPxSphereGeometry_toCPxGeometry(struct CPxSphereGeometry*);
-func (sg *SphereGeometry) ToGeometry() *Geometry {
-	return &Geometry{
+func (sg SphereGeometry) ToGeometry() Geometry {
+	return Geometry{
 		cG: C.CPxSphereGeometry_toCPxGeometry(&sg.cSg),
 	}
 }
 
 // struct CPxSphereGeometry NewCPxSphereGeometry(CPxReal radius);
-func NewSphereGeometry(radius float32) *SphereGeometry {
-	return &SphereGeometry{
+func NewSphereGeometry(radius float32) SphereGeometry {
+	return SphereGeometry{
 		cSg: C.struct_CPxSphereGeometry{
 			radius: C.float(radius),
 		},
@@ -598,14 +598,28 @@ type BoxGeometry struct {
 	cBg C.struct_CPxBoxGeometry
 }
 
-func (bg *BoxGeometry) ToGeometry() *Geometry {
-	return &Geometry{
+// GetExtents returns the extents of each dimension of the box.
+// An extent is half the length total length.
+//
+// For example, a cube of size 1x1x1 would have an extent of 0.5 on each side
+func (bg *BoxGeometry) GetExtents() (ex, ey, ez float32) {
+	return float32(bg.cBg.hx), float32(bg.cBg.hy), float32(bg.cBg.hz)
+}
+
+func (bg *BoxGeometry) SetExtents(ex, ey, ez float32) {
+	bg.cBg.hx = C.float(ex)
+	bg.cBg.hy = C.float(ey)
+	bg.cBg.hz = C.float(ez)
+}
+
+func (bg BoxGeometry) ToGeometry() Geometry {
+	return Geometry{
 		cG: C.CPxBoxGeometry_toCPxGeometry(&bg.cBg),
 	}
 }
 
-func NewBoxGeometry(hx, hy, hz float32) *BoxGeometry {
-	return &BoxGeometry{
+func NewBoxGeometry(hx, hy, hz float32) BoxGeometry {
+	return BoxGeometry{
 		cBg: C.struct_CPxBoxGeometry{
 			hx: C.float(hx),
 			hy: C.float(hy),
@@ -618,14 +632,23 @@ type CapsuleGeometry struct {
 	cCg C.struct_CPxCapsuleGeometry
 }
 
-func (bg *CapsuleGeometry) ToGeometry() *Geometry {
-	return &Geometry{
+func (bg *CapsuleGeometry) GetParams() (radius, extent float32) {
+	return float32(bg.cCg.radius), float32(bg.cCg.halfHeight)
+}
+
+func (bg *CapsuleGeometry) SetParams(radius, extent float32) {
+	bg.cCg.radius = C.float(radius)
+	bg.cCg.halfHeight = C.float(extent)
+}
+
+func (bg CapsuleGeometry) ToGeometry() Geometry {
+	return Geometry{
 		cG: C.CPxCapsuleGeometry_toCPxGeometry(&bg.cCg),
 	}
 }
 
-func NewCapsuleGeometry(radius, halfHeight float32) *CapsuleGeometry {
-	return &CapsuleGeometry{
+func NewCapsuleGeometry(radius, halfHeight float32) CapsuleGeometry {
+	return CapsuleGeometry{
 		cCg: C.struct_CPxCapsuleGeometry{
 			radius:     C.float(radius),
 			halfHeight: C.float(halfHeight),
@@ -642,13 +665,13 @@ type RigidActor struct {
 }
 
 func (ra *RigidActor) SetSimFilterData(fd *FilterData) {
-	C.CPxRigidActor_setSimFilterData(&ra.cRa, &fd.cFilterData)
+	C.CPxRigidActor_setSimFilterData(ra.cRa, fd.cFilterData)
 }
 
 // CPxAPI void CPxRigidActor_setSimFilterData(CSTRUCT CPxRigidActor* cra, CSTRUCT CPxFilterData* cfd);
 
 type RigidStatic struct {
-	cRs *C.struct_CPxRigidStatic
+	cRs C.struct_CPxRigidStatic
 }
 
 func (rs *RigidStatic) ToActor() Actor {
@@ -663,8 +686,8 @@ func (rs *RigidStatic) ToRigidActor() RigidActor {
 	}
 }
 
-func CreatePlane(p *Physics, plane *Plane, mat *Material) *RigidStatic {
-	return &RigidStatic{
+func CreatePlane(p Physics, plane *Plane, mat Material) RigidStatic {
+	return RigidStatic{
 		cRs: C.CPxCreatePlane(p.cPhysics, &plane.cP, mat.cM),
 	}
 }

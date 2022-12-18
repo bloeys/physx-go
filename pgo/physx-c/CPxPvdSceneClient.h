@@ -17,14 +17,7 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI void CPxPvdSceneClient_setScenePvdFlag(CSTRUCT CPxPvdSceneClient* c, CENUM CPxPvdSceneFlag flag, bool value);
-
-	/// <summary>
-	/// This only releases the C struct
-	/// </summary>
-	/// <param name=""></param>
-	/// <returns></returns>
-	CPxAPI void CPxPvdSceneClient_release(CSTRUCT CPxPvdSceneClient*);
+	CPxAPI void CPxPvdSceneClient_setScenePvdFlag(CSTRUCT CPxPvdSceneClient c, CENUM CPxPvdSceneFlag flag, bool value);
 
 #ifdef __cplusplus
 }

@@ -13,8 +13,8 @@ extern "C" {
 		void* obj;
 	};
 
-	CPxAPI CSTRUCT CPxActor CPxRigidStatic_toCPxActor(CSTRUCT CPxRigidStatic*);
-	CPxAPI CSTRUCT CPxRigidActor CPxRigidStatic_toCPxRigidActor(CSTRUCT CPxRigidStatic*);
+	CPxAPI CSTRUCT CPxActor CPxRigidStatic_toCPxActor(CSTRUCT CPxRigidStatic);
+	CPxAPI CSTRUCT CPxRigidActor CPxRigidStatic_toCPxRigidActor(CSTRUCT CPxRigidStatic);
 
 #ifdef __cplusplus
 }
