@@ -544,7 +544,6 @@ type Quat struct {
 	cQ C.struct_CPxQuat
 }
 
-// CPxAPI CPxInline CSTRUCT CPxQuat NewCPxQuat(float angleRads, float x, float y, float z);
 func NewQuat(angleRads, x, y, z float32) *Quat {
 	return &Quat{
 		cQ: C.NewCPxQuat(C.float(angleRads), C.float(x), C.float(y), C.float(z)),
@@ -668,7 +667,15 @@ func (ra *RigidActor) SetSimFilterData(fd *FilterData) {
 	C.CPxRigidActor_setSimFilterData(ra.cRa, fd.cFilterData)
 }
 
-// CPxAPI void CPxRigidActor_setSimFilterData(CSTRUCT CPxRigidActor* cra, CSTRUCT CPxFilterData* cfd);
+// SetUserData sets the void* field on the rigid actor which can be used for any purpose.
+// For example, it can be used to store an id or pointer that ties this rigid actor to some other object
+func (ra *RigidActor) SetUserData(userData unsafe.Pointer) {
+	C.CPxRigidActor_set_userData(ra.cRa, userData)
+}
+
+func (ra *RigidActor) GetUserData() unsafe.Pointer {
+	return C.CPxRigidActor_get_userData(ra.cRa)
+}
 
 type RigidStatic struct {
 	cRs C.struct_CPxRigidStatic
