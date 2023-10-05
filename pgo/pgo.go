@@ -16,6 +16,7 @@ void goOnContactCallback_cgo(void* pairHeader);
 */
 import "C"
 import (
+	"runtime"
 	"unsafe"
 
 	"github.com/bloeys/gglm/gglm"
@@ -660,7 +661,8 @@ type Actor struct {
 }
 
 type RigidActor struct {
-	cRa C.struct_CPxRigidActor
+	cRa    C.struct_CPxRigidActor
+	pinner runtime.Pinner
 }
 
 func (ra *RigidActor) SetSimFilterData(fd *FilterData) {
@@ -669,12 +671,38 @@ func (ra *RigidActor) SetSimFilterData(fd *FilterData) {
 
 // SetUserData sets the void* field on the rigid actor which can be used for any purpose.
 // For example, it can be used to store an id or pointer that ties this rigid actor to some other object
+//
+// Note-1: The passed pointer will be stored in C and as such needs to be pinned, which this function will do.
+// You can refer to this for notes on pinning and pointer rules: Refer to: https://pkg.go.dev/cmd/cgo#hdr-Passing_pointers
+//
+// Note-2: Since this RigidActor object is the one that pinned the user data, it MUST be kept alive at least until ClearUserData is used, at which point the data is unpinned and cleared.
+// If this RigidActor object gets garabage collected before clear, the pinner will detect its getting collected with stuff still pinned (which is a leak) and will panic.
 func (ra *RigidActor) SetUserData(userData unsafe.Pointer) {
+
+	// Note: Do NOT use interfaces here, as we need to ensure the original value
+	// pointed to is pinned, not the pointer to the interface (i.e. pinning the interface).
+	// Better avoid crazy to debug issues
+
+	// User data is a Go pointer stored in C/C++ code, and as such MUST be pinned
+	// before that is done, and must be unpinned when no longer stored in C/C++.
+	//
+	// Here we assume every write is of a different object, and so we always unpin before storing
+	// the new object.
+	//
+	// Refer to: https://pkg.go.dev/cmd/cgo#hdr-Passing_pointers
+	ra.pinner.Unpin()
+	ra.pinner.Pin(userData)
+
 	C.CPxRigidActor_set_userData(ra.cRa, userData)
 }
 
 func (ra *RigidActor) GetUserData() unsafe.Pointer {
 	return C.CPxRigidActor_get_userData(ra.cRa)
+}
+
+func (ra *RigidActor) ClearUserData() {
+	ra.pinner.Unpin()
+	C.CPxRigidActor_set_userData(ra.cRa, nil)
 }
 
 type RigidStatic struct {
