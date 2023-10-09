@@ -555,6 +555,50 @@ type Transform struct {
 	cT C.struct_CPxTransform
 }
 
+func (t *Transform) Pos() Vec3 {
+	return Vec3{cV: t.cT.p}
+}
+
+func (t *Transform) PosX() float32 {
+	return float32(t.cT.p.x)
+}
+
+func (t *Transform) PosY() float32 {
+	return float32(t.cT.p.y)
+}
+
+func (t *Transform) PosZ() float32 {
+	return float32(t.cT.p.z)
+}
+
+func (t *Transform) SetPos(v *Vec3) {
+	t.cT.p = v.cV
+}
+
+func (t *Transform) Rot() Quat {
+	return Quat{cQ: t.cT.q}
+}
+
+func (t *Transform) RotX() float32 {
+	return float32(t.cT.q.x)
+}
+
+func (t *Transform) RotY() float32 {
+	return float32(t.cT.q.y)
+}
+
+func (t *Transform) RotZ() float32 {
+	return float32(t.cT.q.z)
+}
+
+func (t *Transform) RotW() float32 {
+	return float32(t.cT.q.w)
+}
+
+func (t *Transform) SetRot(r *Quat) {
+	t.cT.q = r.cQ
+}
+
 // struct CPxTransform NewCPxTransform(struct CPxVec3*, struct CPxQuat*);
 func NewTransform(v *Vec3, q *Quat) *Transform {
 	return &Transform{
