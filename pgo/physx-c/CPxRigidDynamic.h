@@ -30,7 +30,17 @@ extern "C" {
 	CPxAPI CPxReal CPxRigidDynamic_getAngularDamping(CSTRUCT CPxRigidDynamic crd);
 
 	CPxAPI CSTRUCT CPxVec3 CPxRigidDynamic_getLinearVelocity(CSTRUCT CPxRigidDynamic crd);
+	CPxAPI void CPxRigidDynamic_setLinearVelocity(CSTRUCT CPxRigidDynamic crd, CSTRUCT CPxVec3* velocity, bool autoAwake);
+
+	CPxAPI CPxReal CPxRigidDynamic_getMaxLinearVelocity(CSTRUCT CPxRigidDynamic crd);
+	CPxAPI void CPxRigidDynamic_setMaxLinearVelocity(CSTRUCT CPxRigidDynamic crd, CPxReal maxLinearVelocity);
+
+
 	CPxAPI CSTRUCT CPxVec3 CPxRigidDynamic_getAngularVelocity(CSTRUCT CPxRigidDynamic crd);
+	CPxAPI void CPxRigidDynamic_setAngularVelocity(CSTRUCT CPxRigidDynamic crd, CSTRUCT CPxVec3* velocity, bool autoAwake);
+
+	CPxAPI CPxReal CPxRigidDynamic_getMaxAngularVelocity(CSTRUCT CPxRigidDynamic crd);
+	CPxAPI void CPxRigidDynamic_setMaxAngularVelocity(CSTRUCT CPxRigidDynamic crd, CPxReal maxAngularVelocity);
 
 	CPxAPI void CPxRigidDynamic_setMass(CSTRUCT CPxRigidDynamic crd, CPxReal mass);
 	CPxAPI CPxReal CPxRigidDynamic_getMass(CSTRUCT CPxRigidDynamic crd);

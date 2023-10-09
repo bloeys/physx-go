@@ -29,12 +29,12 @@ func (rd *RigidDynamic) SetLinearDamping(damping float32) {
 	C.CPxRigidDynamic_setLinearDamping(rd.cRd, C.float(damping))
 }
 
-func (rd *RigidDynamic) SetAngularDamping(damping float32) {
-	C.CPxRigidDynamic_setAngularDamping(rd.cRd, C.float(damping))
-}
-
 func (rd *RigidDynamic) GetLinearDamping() float32 {
 	return float32(C.CPxRigidDynamic_getLinearDamping(rd.cRd))
+}
+
+func (rd *RigidDynamic) SetAngularDamping(damping float32) {
+	C.CPxRigidDynamic_setAngularDamping(rd.cRd, C.float(damping))
 }
 
 func (rd *RigidDynamic) GetAngularDamping() float32 {
@@ -47,10 +47,34 @@ func (rd *RigidDynamic) GetLinearVelocity() Vec3 {
 	}
 }
 
+func (rd *RigidDynamic) SetLinearVelocity(vel *Vec3, autoWake bool) {
+	C.CPxRigidDynamic_setLinearVelocity(rd.cRd, &vel.cV, C._Bool(autoWake))
+}
+
 func (rd *RigidDynamic) GetAngularVelocity() Vec3 {
 	return Vec3{
 		cV: C.CPxRigidDynamic_getAngularVelocity(rd.cRd),
 	}
+}
+
+func (rd *RigidDynamic) SetAngularVelocity(vel *Vec3, autoWake bool) {
+	C.CPxRigidDynamic_setAngularVelocity(rd.cRd, &vel.cV, C._Bool(autoWake))
+}
+
+func (rd *RigidDynamic) GetMaxLinearVelocity() float32 {
+	return float32(C.CPxRigidDynamic_getMaxLinearVelocity(rd.cRd))
+}
+
+func (rd *RigidDynamic) SetMaxLinearVelocity(vel float32) {
+	C.CPxRigidDynamic_setMaxLinearVelocity(rd.cRd, C.float(vel))
+}
+
+func (rd *RigidDynamic) GetMaxAngularVelocity() float32 {
+	return float32(C.CPxRigidDynamic_getMaxAngularVelocity(rd.cRd))
+}
+
+func (rd *RigidDynamic) SetMaxAngularVelocity(vel float32) {
+	C.CPxRigidDynamic_setMaxAngularVelocity(rd.cRd, C.float(vel))
 }
 
 func (rd *RigidDynamic) SetMass(mass float32) {
