@@ -122,6 +122,13 @@ func (rd *RigidDynamic) ToRigidActor() RigidActor {
 }
 
 func CreateDynamic(p Physics, t *Transform, g Geometry, m Material, density float32, shapeOffset *Transform) RigidDynamic {
+
+	if shapeOffset == nil {
+		return RigidDynamic{
+			cRd: C.CPxCreateDynamic(p.cPhysics, &t.cT, g.cG, m.cM, C.float(density), nil),
+		}
+	}
+
 	return RigidDynamic{
 		cRd: C.CPxCreateDynamic(p.cPhysics, &t.cT, g.cG, m.cM, C.float(density), &shapeOffset.cT),
 	}
