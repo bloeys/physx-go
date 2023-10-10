@@ -13,6 +13,7 @@ package pgo
 
 //simulation event callbacks forward declarations. Actual definitions MUST be in a go different file
 void goOnContactCallback_cgo(void* pairHeader);
+void goOnTriggerCallback_cgo(void* triggerPairs, CPxU32 count);
 */
 import "C"
 import (
@@ -24,6 +25,7 @@ import (
 
 var (
 	contactCallback func(ContactPairHeader) = func(ContactPairHeader) {}
+	triggerCallback func([]TriggerPair)     = func([]TriggerPair) {}
 )
 
 type Foundation struct {
@@ -396,11 +398,18 @@ func (sd *SceneDesc) SetCpuDispatcher(cd CpuDispatcher) {
 	C.CPxSceneDesc_set_cpuDispatcher(sd.cSD, cd.cCpuDisp)
 }
 
-// SetOnContactCallback sets the GLOBAL contact callback handler. Physx-c currently only supports 1 contact callback handler.
+// SetOnContactCallback sets the GLOBAL contact callback handler. We currently only supports 1 contact callback handler.
 // Setting a contact callback handler overrides the previous one. Only the most recent one gets called.
 func (sd *SceneDesc) SetOnContactCallback(cb func(ContactPairHeader)) {
 	contactCallback = cb
-	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxonContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
+	C.CPxSceneDesc_set_onContactCallback(sd.cSD, (C.CPxOnContactCallback)(unsafe.Pointer(C.goOnContactCallback_cgo)))
+}
+
+// SetOnTriggerCallback sets the GLOBAL trigger callback handler. We currently only supports 1 trugger callback handler.
+// Setting a handler overrides the previous one. Only the most recent one gets called.
+func (sd *SceneDesc) SetOnTriggerCallback(cb func([]TriggerPair)) {
+	triggerCallback = cb
+	C.CPxSceneDesc_set_onTriggerCallback(sd.cSD, (C.CPxOnTriggerCallback)(unsafe.Pointer(C.goOnTriggerCallback_cgo)))
 }
 
 func NewSceneDesc(ts TolerancesScale) SceneDesc {
@@ -508,6 +517,42 @@ func (cpp *ContactPairPoint) GetSeparation() float32 {
 
 func (cpp *ContactPairPoint) GetInternalFaceIndices() (float32, float32) {
 	return float32(cpp.cCpp.internalFaceIndex0), float32(cpp.cCpp.internalFaceIndex1)
+}
+
+type TriggerPair struct {
+	cTp *C.struct_CPxTriggerPair
+}
+
+func (tp *TriggerPair) TriggerShape() Shape {
+	return Shape{
+		cShape: tp.cTp.triggerShape,
+	}
+}
+
+func (tp *TriggerPair) TriggerActor() RigidActor {
+	return RigidActor{
+		cRa: tp.cTp.triggerActor,
+	}
+}
+
+func (tp *TriggerPair) OtherShape() Shape {
+	return Shape{
+		cShape: tp.cTp.otherShape,
+	}
+}
+
+func (tp *TriggerPair) OtherActor() RigidActor {
+	return RigidActor{
+		cRa: tp.cTp.otherActor,
+	}
+}
+
+func (tp *TriggerPair) Status() PairFlags {
+	return PairFlags(tp.cTp.status)
+}
+
+func (tp *TriggerPair) Flags() TriggerPairFlag {
+	return TriggerPairFlag(tp.cTp.flags)
 }
 
 type PvdSceneFlag uint32

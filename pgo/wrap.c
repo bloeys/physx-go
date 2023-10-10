@@ -39,4 +39,5 @@
 
 #include <CPxSimpleFactory.h>
 
+#include <CPxTriggerPair.h>
 #include <CPxContactPairHeader.h>

@@ -13,7 +13,8 @@ extern "C" {
 		void* obj;
 	};
 
-	typedef void (*CPxonContactCallback)(void* pairHeader);
+	typedef void (*CPxOnContactCallback)(void* pairHeader);
+	typedef void (*CPxOnTriggerCallback)(void* triggerPairs, CPxU32 count);
 
 	/// <summary>
 	/// Creates a SceneDesc with a custom filterShader that uses word0/word1 as groups shapes can belong to, word2 as a mask on word0, and word3 as a mask on word1.
@@ -25,12 +26,20 @@ extern "C" {
 	CPxAPI void CPxSceneDesc_set_cpuDispatcher(CSTRUCT CPxSceneDesc, CSTRUCT CPxCpuDispatcher);
 
 
-	//CPxSceneDesc_set_onContactCallback sets the contact callback handler of the given scene descriptor.
-	//The callback is sent an object of type 'CPxContactPairHeader*'. This object is only valid for the duration of the callback handler.
-	//Therefore, the callback handler MUST copy data it wishes to keep for longer than the lifetime of the callback handler, as the memory it was handed might be reused/freed.
+	// CPxSceneDesc_set_onContactCallback sets the on-contact callback handler of the given scene descriptor.
+	// The callback is sent an object of type 'CPxContactPairHeader*'. This object is only valid for the duration of the callback handler.
+	// Therefore, the callback handler MUST copy data it wishes to keep for longer than the lifetime of the callback handler, as the memory it was handed might be reused/freed.
 	//
-	//NOTE: This function assumes you are using the default physx-c callback handler. Do NOT use this function if you set 'sceneDesc->simulationEventCallback' with your own custom implementation.
-	CPxAPI void CPxSceneDesc_set_onContactCallback(CSTRUCT CPxSceneDesc, CPxonContactCallback cb);
+	// NOTE: This function assumes you are using the default physx-c callback handler. Do NOT use this function if you set 'sceneDesc->simulationEventCallback' with your own custom implementation.
+	CPxAPI void CPxSceneDesc_set_onContactCallback(CSTRUCT CPxSceneDesc, CPxOnContactCallback cb);
+
+	// CPxSceneDesc_set_onTriggerCallback sets the on-trigger callback handler of the given scene descriptor.
+	// The callback is sent an object of type 'CPxTriggerPairHeader*'. This object is only valid for the duration of the callback handler.
+	// Therefore, the callback handler MUST copy data it wishes to keep for longer than the lifetime of the callback handler, as the memory it was handed might be reused/freed.
+	//
+	// NOTE: This function assumes you are using the default physx-c callback handler. Do NOT use this function if you set 'sceneDesc->simulationEventCallback' with your own custom implementation.
+	CPxAPI void CPxSceneDesc_set_onTriggerCallback(CSTRUCT CPxSceneDesc csd, CPxOnTriggerCallback cb);
+
 	CPxAPI void FreeCPxSceneDesc(CSTRUCT CPxSceneDesc);
 
 #ifdef __cplusplus
